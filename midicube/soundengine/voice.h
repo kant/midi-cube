@@ -10,6 +10,8 @@
 
 #include "../envelope.h"
 #include "../synthesis.h"
+#include "../metronome.h"
+#include <functional>
 
 struct SimpleVoice {
 	TriggeredNote note;
@@ -78,7 +80,43 @@ void VoiceManager<V, N>::release_note(SampleInfo& info, unsigned int note, bool 
 	}
 }
 
+enum ArpeggiatorPattern {
+	ARP_UP, ARP_DOWN, ARP_RANDOM, ARP_UP_DOWN, ARP_UP_CUSTOM, ARP_DOWN_CUSTOM
+};
 
+struct ArpeggiatorPreset {
+	ArpeggiatorPattern pattern;
+	std::vector<unsigned int> data;
+	unsigned int octaves = 1;
+	int value = 1;
+	bool hold = false;
+};
+
+#define ARPEGGIATOR_POLYPHONY 30
+
+class Arpeggiator {
+
+private:
+	unsigned int curr_note = 0;
+	std::size_t data_index = 0;
+	std::size_t note_index = 0;
+	bool restart = true;
+
+public:
+	bool on = false;
+	ArpeggiatorPreset preset;
+	VoiceManager<SimpleVoice, ARPEGGIATOR_POLYPHONY> note;
+	Metronome metronome;
+
+	Arpeggiator();
+
+	void apply(SampleInfo& info, std::function<void(SampleInfo&, unsigned int, double)> press, std::function<void(SampleInfo&, unsigned int)> release);
+
+	void press_note(SampleInfo& info, unsigned int note, double velocity);
+
+	void release_note(SampleInfo& info, unsigned int note);
+
+};
 
 
 #endif /* MIDICUBE_SOUNDENGINE_VOICE_H_ */
