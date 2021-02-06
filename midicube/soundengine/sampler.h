@@ -13,6 +13,8 @@
 #include "../audiofile.h"
 #include "../envelope.h"
 
+#define SAMPLER_POLYPHONY 64
+
 struct SampleRegionConfig {
 	std::string filename;
 	double freq;
@@ -71,7 +73,7 @@ public:
 	~SampleSoundStore();
 };
 
-class Sampler : public BaseSoundEngine {
+class Sampler : public BaseSoundEngine<SimpleVoice, SAMPLER_POLYPHONY> {
 
 private:
 	SampleSound* sample;

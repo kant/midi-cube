@@ -12,7 +12,7 @@
 #include "../audiofile.h"
 #include <unordered_map>
 
-
+#define SAMPLE_DRUMS_POLYPHONY 32
 
 struct SampleDrumKit {
 	std::unordered_map<unsigned int, AudioSample> notes;
@@ -20,7 +20,7 @@ struct SampleDrumKit {
 
 
 
-class SampleDrums : public BaseSoundEngine {
+class SampleDrums : public BaseSoundEngine<SimpleVoice, SAMPLE_DRUMS_POLYPHONY> {
 
 private:
 	SampleDrumKit* drumkit;

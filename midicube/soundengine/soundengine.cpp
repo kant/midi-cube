@@ -6,75 +6,7 @@
  */
 
 #include "soundengine.h"
-
 #include <algorithm>
-
-//BaseSoundEngine
-void BaseSoundEngine::midi_message(MidiMessage& message, SampleInfo& info) {
-	double pitch;
-	switch (message.type) {
-		case MessageType::NOTE_ON:
-			press_note(info, message.note(), message.velocity()/127.0);
-			break;
-		case MessageType::NOTE_OFF:
-			release_note(info, message.note());
-			break;
-		case MessageType::CONTROL_CHANGE:
-			control_change(message.control(), message.value());
-			//Sustain
-			if (message.control() == sustain_control) {
-				bool new_sustain = message.value() != 0;
-				if (new_sustain != environment.sustain) {
-					if (new_sustain) {
-						environment.sustain_time = info.time;
-					}
-					else {
-						environment.sustain_release_time = info.time;
-					}
-					environment.sustain = new_sustain;
-				}
-			}
-			break;
-		case MessageType::PITCH_BEND:
-			pitch = (message.get_pitch_bend()/8192.0 - 1.0) * 2;
-			environment.pitch_bend = note_to_freq_transpose(pitch);
-			break;
-		default:
-			break;
-	}
-}
-
-void BaseSoundEngine::press_note(SampleInfo& info, unsigned int note, double velocity) {
-	this->note.press_note(info, note, velocity);
-}
-
-void BaseSoundEngine::release_note(SampleInfo& info, unsigned int note) {
-	this->note.release_note(info, note);
-}
-
-void BaseSoundEngine::process_sample(double& lsample, double& rsample, SampleInfo& info) {
-	EngineStatus status = {0, 0, nullptr};
-	//Notes
-	for (size_t i = 0; i < SOUND_ENGINE_POLYPHONY; ++i) {
-		TriggeredNote& n = note.note[i].note;
-		if (n.valid) {
-			if (note_finished(info, n, environment, i)) {
-				n.valid = false;
-			}
-			else {
-				++status.pressed_notes; //TODO might cause problems in the future
-				n.phase_shift += (environment.pitch_bend - 1) * info.time_step;
-				process_note_sample(lsample, rsample, info, n, environment, i);
-				if (!status.latest_note || status.latest_note->start_time < n.start_time) {
-					status.latest_note = &n;
-					status.latest_note_index = i;
-				}
-			}
-		}
-	}
-	//Static sample
-	process_sample(lsample, rsample, info, environment, status);
-}
 
 //SoundEngineChannel
 SoundEngineChannel::SoundEngineChannel() {

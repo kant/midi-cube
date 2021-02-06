@@ -69,7 +69,7 @@ Scene AnalogSynthView::create(Frame &frame) {
 		Label* title = new Label("Osc Count", main_font, 12, tmp_x, tmp_y);
 		controls.push_back(title);
 
-		DragBox<int>* value = new DragBox<int>(0, 0, ANALOG_PART_COUNT, main_font, 16, tmp_x, tmp_y + 15, 80, 40);
+		DragBox<int>* value = new DragBox<int>(0, 0, ANALOG_SYNTH_PART_COUNT, main_font, 16, tmp_x, tmp_y + 15, 80, 40);
 		value->bind(&synth, SynthProperty::pSynthOscCount);
 		controls.push_back(value);
 	}
@@ -79,7 +79,7 @@ Scene AnalogSynthView::create(Frame &frame) {
 		Label* title = new Label("Env Count", main_font, 12, tmp_x, tmp_y);
 		controls.push_back(title);
 
-		DragBox<int>* value = new DragBox<int>(0, 0, ANALOG_PART_COUNT, main_font, 16, tmp_x, tmp_y + 15, 80, 40);
+		DragBox<int>* value = new DragBox<int>(0, 0, ANALOG_SYNTH_PART_COUNT, main_font, 16, tmp_x, tmp_y + 15, 80, 40);
 		value->bind(&synth, SynthProperty::pSynthModEnvCount);
 		controls.push_back(value);
 	}
@@ -87,7 +87,7 @@ Scene AnalogSynthView::create(Frame &frame) {
 	{
 		Label* title = new Label("LFO Count", main_font, 12, tmp_x, tmp_y);
 		controls.push_back(title);
-		DragBox<int>* value = new DragBox<int>(0, 0, ANALOG_PART_COUNT, main_font, 16, tmp_x, tmp_y + 15, 80, 40);
+		DragBox<int>* value = new DragBox<int>(0, 0, ANALOG_SYNTH_PART_COUNT, main_font, 16, tmp_x, tmp_y + 15, 80, 40);
 		value->bind(&synth, SynthProperty::pSynthLFOCount);
 		controls.push_back(value);
 	}

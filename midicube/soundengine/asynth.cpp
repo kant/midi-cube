@@ -366,9 +366,9 @@ AnalogSynth::AnalogSynth() {
 }
 
 static inline double apply_modulation(const FixedScale &scale,
-		PropertyModulation &mod, std::array<double, ANALOG_PART_COUNT> &env_val,
-		std::array<double, ANALOG_PART_COUNT> &lfo_val,
-		std::array<double, ANALOG_CONTROL_COUNT> &controls, double velocity) {
+		PropertyModulation &mod, std::array<double, ANALOG_SYNTH_PART_COUNT> &env_val,
+		std::array<double, ANALOG_SYNTH_PART_COUNT> &lfo_val,
+		std::array<double, ANALOG_SYNTH_CONTROL_COUNT> &controls, double velocity) {
 	double prog = mod.value;
 	prog += env_val[mod.mod_env] * mod.mod_env_amount
 			+ lfo_val[mod.lfo] * mod.lfo_amount

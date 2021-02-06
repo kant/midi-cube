@@ -31,6 +31,8 @@
 #define ORGAN_VIBRATO_RATE 7
 #define ORGAN_VIBRATO_DELAY_STAGES 9
 
+#define ORGAN_POLYPHONY 128
+
 
 enum B3OrganProperty {
 	pB3Drawbar1,
@@ -177,7 +179,7 @@ public:
 
 };
 
-class B3Organ : public BaseSoundEngine, public PropertyHolder {
+class B3Organ : public BaseSoundEngine<SimpleVoice, ORGAN_POLYPHONY>, public PropertyHolder {
 
 private:
 	//Static values

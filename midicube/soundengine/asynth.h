@@ -14,8 +14,9 @@
 #include "../util.h"
 #include "../property.h"
 
-#define ANALOG_PART_COUNT 8
-#define ANALOG_CONTROL_COUNT 128
+#define ANALOG_SYNTH_PART_COUNT 8
+#define ANALOG_SYNTH_CONTROL_COUNT 128
+#define ANALOG_SYNTH_POLYPHONY 32
 
 const FixedScale VOLUME_SCALE = {0, {}, 1};
 const FixedScale SYNC_SCALE = {0, {}, 1};
@@ -83,9 +84,9 @@ struct LFOEntity {
 };
 
 struct AnalogSynthPreset {
-	std::array<LFOEntity, ANALOG_PART_COUNT> lfos;
-	std::array<ModEnvelopeEntity, ANALOG_PART_COUNT> mod_envs;
-	std::array<OscilatorEntity, ANALOG_PART_COUNT> oscilators;
+	std::array<LFOEntity, ANALOG_SYNTH_PART_COUNT> lfos;
+	std::array<ModEnvelopeEntity, ANALOG_SYNTH_PART_COUNT> mod_envs;
+	std::array<OscilatorEntity, ANALOG_SYNTH_PART_COUNT> oscilators;
 
 	size_t lfo_count = 1;
 	size_t mod_env_count = 0;
@@ -190,19 +191,19 @@ protected:
 	}
 };
 
-class AnalogSynth : public BaseSoundEngine, public PropertyHolder {
+class AnalogSynth : public BaseSoundEngine<SimpleVoice, ANALOG_SYNTH_POLYPHONY>, public PropertyHolder {
 
 private:
-	AnalogOscilatorBank<SOUND_ENGINE_POLYPHONY * ANALOG_PART_COUNT, 8> oscilators;
-	std::array<double, SOUND_ENGINE_POLYPHONY * ANALOG_PART_COUNT> modulators = {};
-	std::array<Filter, SOUND_ENGINE_POLYPHONY * ANALOG_PART_COUNT> filters;
-	std::array<ADSREnvelope, SOUND_ENGINE_POLYPHONY * ANALOG_PART_COUNT> amp_envs;
-	std::array<ADSREnvelope, SOUND_ENGINE_POLYPHONY * ANALOG_PART_COUNT> mod_envs;
-	std::array<double, ANALOG_PART_COUNT> env_val = {};
-	std::array<AnalogOscilator, ANALOG_PART_COUNT> lfos;
-	std::array<double, ANALOG_PART_COUNT> lfo_val = {};
-	std::array<double, ANALOG_PART_COUNT> lfo_mod = {};
-	std::array<double, ANALOG_CONTROL_COUNT> controls;
+	AnalogOscilatorBank<SOUND_ENGINE_POLYPHONY * ANALOG_SYNTH_PART_COUNT, 8> oscilators;
+	std::array<double, SOUND_ENGINE_POLYPHONY * ANALOG_SYNTH_PART_COUNT> modulators = {};
+	std::array<Filter, SOUND_ENGINE_POLYPHONY * ANALOG_SYNTH_PART_COUNT> filters;
+	std::array<ADSREnvelope, SOUND_ENGINE_POLYPHONY * ANALOG_SYNTH_PART_COUNT> amp_envs;
+	std::array<ADSREnvelope, SOUND_ENGINE_POLYPHONY * ANALOG_SYNTH_PART_COUNT> mod_envs;
+	std::array<double, ANALOG_SYNTH_PART_COUNT> env_val = {};
+	std::array<AnalogOscilator, ANALOG_SYNTH_PART_COUNT> lfos;
+	std::array<double, ANALOG_SYNTH_PART_COUNT> lfo_val = {};
+	std::array<double, ANALOG_SYNTH_PART_COUNT> lfo_mod = {};
+	std::array<double, ANALOG_SYNTH_CONTROL_COUNT> controls;
 
 	bool first_port = true;
 	unsigned int last_note = 0;
@@ -216,7 +217,7 @@ private:
 
 public:
 	AnalogSynthPreset preset;
-	std::array<SynthPartPropertyHolder, ANALOG_PART_COUNT> parts;
+	std::array<SynthPartPropertyHolder, ANALOG_SYNTH_PART_COUNT> parts;
 
 	AnalogSynth();
 
