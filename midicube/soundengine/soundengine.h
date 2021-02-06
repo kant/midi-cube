@@ -54,7 +54,7 @@ template<typename V, size_t N>
 class BaseSoundEngine : public SoundEngine {
 private:
 	KeyboardEnvironment environment;
-	VoiceManager<V, N> note;
+	VoiceManager<V, N> voice_mgr;
 
 public:
 	std::atomic<unsigned int> sustain_control{64};
@@ -68,7 +68,7 @@ public:
 
 	void process_sample(double& lsample, double& rsample, SampleInfo& info);
 
-	virtual void process_note_sample(double& lsample, double& rsample, SampleInfo& info, TriggeredNote& note, KeyboardEnvironment& env, size_t note_index) = 0;
+	virtual void process_note_sample(double& lsample, double& rsample, SampleInfo& info, V& voice, KeyboardEnvironment& env, size_t note_index) = 0;
 
 	virtual void process_sample(double& lsample, double& rsample, SampleInfo& info, KeyboardEnvironment& env, EngineStatus& status) {
 
@@ -78,8 +78,8 @@ public:
 
 	};
 
-	virtual bool note_finished(SampleInfo& info, TriggeredNote& note, KeyboardEnvironment& env, size_t note_index) {
-		return !note.pressed || (env.sustain && note.release_time >= env.sustain_time);
+	virtual bool note_finished(SampleInfo& info, SimpleVoice& voice, KeyboardEnvironment& env, size_t note_index) {
+		return !voice.note.pressed || (env.sustain && voice.note.release_time >= env.sustain_time);
 	};
 
 	virtual ~BaseSoundEngine() {
@@ -125,12 +125,12 @@ void BaseSoundEngine<V, N>::midi_message(MidiMessage& message, SampleInfo& info)
 
 template<typename V, size_t N>
 void BaseSoundEngine<V, N>::press_note(SampleInfo& info, unsigned int note, double velocity) {
-	this->note.press_note(info, note, velocity);
+	this->voice_mgr.press_note(info, note, velocity);
 }
 
 template<typename V, size_t N>
 void BaseSoundEngine<V, N>::release_note(SampleInfo& info, unsigned int note) {
-	this->note.release_note(info, note);
+	this->voice_mgr.release_note(info, note);
 }
 
 template<typename V, size_t N>
@@ -138,15 +138,15 @@ void BaseSoundEngine<V, N>::process_sample(double& lsample, double& rsample, Sam
 	EngineStatus status = {0, 0, nullptr};
 	//Notes
 	for (size_t i = 0; i < SOUND_ENGINE_POLYPHONY; ++i) {
-		TriggeredNote& n = note.note[i].note;
+		TriggeredNote& n = voice_mgr.note[i].note;
 		if (n.valid) {
-			if (note_finished(info, n, environment, i)) {
+			if (note_finished(info, voice_mgr.note[i], environment, i)) {
 				n.valid = false;
 			}
 			else {
 				++status.pressed_notes; //TODO might cause problems in the future
 				n.phase_shift += (environment.pitch_bend - 1) * info.time_step;
-				process_note_sample(lsample, rsample, info, n, environment, i);
+				process_note_sample(lsample, rsample, info, voice_mgr.note[i], environment, i);
 				if (!status.latest_note || status.latest_note->start_time < n.start_time) {
 					status.latest_note = &n;
 					status.latest_note_index = i;

@@ -211,7 +211,7 @@ private:
 	DelayBuffer ldelay;
 	DelayBuffer rdelay;
 
-	inline void process_note(double& lsample, double& rsample, SampleInfo& info, TriggeredNote& note, KeyboardEnvironment& env, size_t note_index);
+	inline void process_note(double& lsample, double& rsample, SampleInfo& info, SimpleVoice& voice, KeyboardEnvironment& env, size_t note_index);
 
 	inline bool amp_finished(SampleInfo& info, TriggeredNote& note, KeyboardEnvironment& env, size_t note_index);
 
@@ -221,13 +221,13 @@ public:
 
 	AnalogSynth();
 
-	void process_note_sample(double& lsample, double& rsample, SampleInfo& info, TriggeredNote& note, KeyboardEnvironment& env, size_t note_index);
+	void process_note_sample(double& lsample, double& rsample, SampleInfo& info, SimpleVoice& voice, KeyboardEnvironment& env, size_t note_index);
 
 	void process_sample(double& lsample, double& rsample, SampleInfo& info, KeyboardEnvironment& env, EngineStatus& status);
 
 	void control_change(unsigned int control, unsigned int value);
 
-	bool note_finished(SampleInfo& info, TriggeredNote& note, KeyboardEnvironment& env, size_t note_index);
+	bool note_finished(SampleInfo& info, SimpleVoice& voice, KeyboardEnvironment& env, size_t note_index);
 	
 	void set(size_t prop, PropertyValue value, size_t sub_prop);
 	

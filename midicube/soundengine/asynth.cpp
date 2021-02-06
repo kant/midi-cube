@@ -378,8 +378,9 @@ static inline double apply_modulation(const FixedScale &scale,
 }
 
 void AnalogSynth::process_note(double& lsample, double& rsample,
-		SampleInfo &info, TriggeredNote &note, KeyboardEnvironment &env,
+		SampleInfo &info, SimpleVoice& voice, KeyboardEnvironment &env,
 		size_t note_index) {
+	TriggeredNote& note = voice.note;
 	env_val = { };
 	//Reset amps
 	bool reset_amps = amp_finished(info, note, env, note_index); //TODO maybe use press note event
@@ -392,7 +393,7 @@ void AnalogSynth::process_note(double& lsample, double& rsample,
 		}
 
 		double volume = apply_modulation(VOLUME_SCALE, mod_env.volume, env_val,
-				lfo_val, controls, note.velocity);
+				lfo_val, controls, voice.note.velocity);
 		env_val[i] =
 				mod_envs[note_index + i * SOUND_ENGINE_POLYPHONY].amplitude(
 						mod_env.env, info.time_step, note.pressed, env.sustain)
@@ -486,9 +487,9 @@ void AnalogSynth::process_note(double& lsample, double& rsample,
 
 void AnalogSynth::process_note_sample(
 		double& lsample, double& rsample, SampleInfo &info,
-		TriggeredNote &note, KeyboardEnvironment &env, size_t note_index) {
+		SimpleVoice& voice, KeyboardEnvironment &env, size_t note_index) {
 	if (!preset.mono) {
-		process_note(lsample, rsample, info, note, env, note_index);
+		process_note(lsample, rsample, info, voice, env, note_index);
 	}
 }
 
@@ -566,13 +567,13 @@ void AnalogSynth::control_change(unsigned int control, unsigned int value) {
 	controls[control] = value / 127.0;
 }
 
-bool AnalogSynth::note_finished(SampleInfo &info, TriggeredNote &note,
+bool AnalogSynth::note_finished(SampleInfo &info, SimpleVoice& voice,
 		KeyboardEnvironment &env, size_t note_index) {
 	//Mono notes
 	if (preset.mono) {	//TODO not very easy to read/side effects
 		note_index = 0;
 	}
-	return !note.pressed && amp_finished(info, note, env, note_index);
+	return !voice.note.pressed && amp_finished(info, voice.note, env, note_index);
 }
 
 bool AnalogSynth::amp_finished(SampleInfo &info, TriggeredNote &note,
