@@ -9,50 +9,6 @@
 
 #include <algorithm>
 
-//NoteBuffer
-NoteBuffer::NoteBuffer () {
-	//Init notes
-	for (size_t i = 0; i < note.size(); ++i) {
-		note[i].start_time = -1024;
-		note[i].release_time = -1024;
-	}
-}
-
-size_t NoteBuffer::next_freq_slot(SampleInfo& info) {
-	for (size_t i = 0; i < SOUND_ENGINE_POLYPHONY; ++i) {
-		if (!note[i].valid) {
-			return i;
-		}
-	}
-	//TODO return longest used slot
-	return 0;
-}
-
-void NoteBuffer::press_note(SampleInfo& info, unsigned int note, double velocity) {
-	size_t slot = next_freq_slot(info);
-	this->note[slot].freq = note_to_freq(note);
-	this->note[slot].velocity = velocity;
-	this->note[slot].note = note;
-	this->note[slot].pressed = true;
-	this->note[slot].start_time = info.time;
-	this->note[slot].release_time = 0;
-	this->note[slot].phase_shift = 0;
-	this->note[slot].valid = true;
-}
-
-void NoteBuffer::release_note(SampleInfo& info, unsigned int note, bool invalidate) {
-	double f = note_to_freq(note);
-	for (size_t i = 0; i < SOUND_ENGINE_POLYPHONY; ++i) {
-		if (this->note[i].freq == f && this->note[i].pressed) {
-			this->note[i].pressed = false;
-			this->note[i].release_time = info.time;
-			if (invalidate) {
-				this->note[i].valid = false;
-			}
-		}
-	}
-}
-
 //BaseSoundEngine
 void BaseSoundEngine::midi_message(MidiMessage& message, SampleInfo& info) {
 	double pitch;
@@ -100,16 +56,17 @@ void BaseSoundEngine::process_sample(double& lsample, double& rsample, SampleInf
 	EngineStatus status = {0, 0, nullptr};
 	//Notes
 	for (size_t i = 0; i < SOUND_ENGINE_POLYPHONY; ++i) {
-		if (note.note[i].valid) {
-			if (note_finished(info, note.note[i], environment, i)) {
-				note.note[i].valid = false;
+		TriggeredNote& n = note.note[i].note;
+		if (n.valid) {
+			if (note_finished(info, n, environment, i)) {
+				n.valid = false;
 			}
 			else {
 				++status.pressed_notes; //TODO might cause problems in the future
-				note.note[i].phase_shift += (environment.pitch_bend - 1) * info.time_step;
-				process_note_sample(lsample, rsample, info, note.note[i], environment, i);
-				if (!status.latest_note || status.latest_note->start_time < note.note[i].start_time) {
-					status.latest_note = &note.note[i];
+				n.phase_shift += (environment.pitch_bend - 1) * info.time_step;
+				process_note_sample(lsample, rsample, info, n, environment, i);
+				if (!status.latest_note || status.latest_note->start_time < n.start_time) {
+					status.latest_note = &n;
 					status.latest_note_index = i;
 				}
 			}
@@ -130,7 +87,7 @@ void Arpeggiator::apply(SampleInfo& info, std::function<void(SampleInfo&, unsign
 	if (!restart) {
 		bool released = true;
 		for (size_t i = 0; i < this->note.note.size() && released; ++i) {
-			released = !this->note.note[i].pressed;
+			released = !this->note.note[i].note.pressed;
 		}
 		restart = released;
 	}
@@ -151,16 +108,17 @@ void Arpeggiator::apply(SampleInfo& info, std::function<void(SampleInfo&, unsign
 		switch (preset.pattern) {
 		case ArpeggiatorPattern::ARP_UP:
 			for (size_t i = 0; i < this->note.note.size(); ++i) {
-				if (this->note.note[i].pressed) {
-					if (this->note.note[i].note < lowest_note) {
-						lowest_note = this->note.note[i].note;
+				TriggeredNote& n = note.note[i].note;
+				if (n.pressed) {
+					if (n.note < lowest_note) {
+						lowest_note = n.note;
 						lowest_index = i;
 					}
 					//Find next highest note
 					for (unsigned int octave = 0; octave < preset.octaves; ++octave) {
-						unsigned int n = this->note.note[i].note + octave * 12;
-						if (n < next_note && (n > curr_note || (n == curr_note && note_index > i))) {
-							next_note = n;
+						unsigned int no = n.note + octave * 12;
+						if (no < next_note && (no > curr_note || (no == curr_note && note_index > i))) {
+							next_note = no;
 							next_index = i;
 							break;
 						}
@@ -175,17 +133,18 @@ void Arpeggiator::apply(SampleInfo& info, std::function<void(SampleInfo&, unsign
 			break;
 		case ArpeggiatorPattern::ARP_DOWN:
 			for (size_t i = 0; i < this->note.note.size(); ++i) {
-				if (this->note.note[i].pressed) {
-					if ((int) (this->note.note[i].note + (preset.octaves - 1) * 12) > highest_note) {
-						highest_note = this->note.note[i].note  + (preset.octaves - 1) * 12;
+				TriggeredNote& n = note.note[i].note;
+				if (n.pressed) {
+					if ((int) (n.note + (preset.octaves - 1) * 12) > highest_note) {
+						highest_note = n.note  + (preset.octaves - 1) * 12;
 						highest_index = i;
 					}
 					//Find next lowest note
 					for (unsigned int o = 0; o < preset.octaves; ++o) {
 						unsigned int octave = preset.octaves - o - 1;
-						unsigned int n = this->note.note[i].note + octave * 12;
-						if (n > next_note && (n > curr_note || (n == curr_note && note_index > i))) {
-							next_note = n;
+						unsigned int no = n.note + octave * 12;
+						if (no > next_note && (no > curr_note || (no == curr_note && note_index > i))) {
+							next_note = no;
 							next_index = i;
 							break;
 						}
@@ -214,7 +173,7 @@ void Arpeggiator::apply(SampleInfo& info, std::function<void(SampleInfo&, unsign
 		if (next_index >= 0) {
 			curr_note = next_note;
 			this->note_index = next_index;
-			press(info, curr_note, this->note.note[note_index].velocity);
+			press(info, curr_note, this->note.note[note_index].note.velocity);
 			restart = false;
 		}
 	}

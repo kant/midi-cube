@@ -160,7 +160,7 @@ public:
 	double process(SampleInfo& info, double freq);
 };
 
-class B3OrganData : public SoundEngineData{
+class B3OrganData {
 public:
 	B3OrganPreset preset;
 	AmplifierSimulationEffect amplifier;
@@ -175,9 +175,6 @@ public:
 
 	double swell = 1;
 
-	virtual SoundEngineData* copy() {
-		return new B3OrganData();	//TODO
-	}
 };
 
 class B3Organ : public BaseSoundEngine, public PropertyHolder {

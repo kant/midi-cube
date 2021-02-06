@@ -17,6 +17,7 @@
 #include "../effect/vocoder.h"
 #include "../effect/bitcrusher.h"
 #include "../property.h"
+#include "voice.h"
 #include <string>
 #include <array>
 #include <functional>
@@ -30,32 +31,6 @@ struct EngineStatus {
 	size_t pressed_notes;
 	size_t latest_note_index;
 	TriggeredNote* latest_note;
-};
-
-class NoteBuffer {
-private:
-	size_t next_freq_slot(SampleInfo& info);
-
-public:
-	std::array<TriggeredNote, SOUND_ENGINE_POLYPHONY> note;
-
-	NoteBuffer();
-
-	void press_note(SampleInfo& info, unsigned int note, double velocity);
-	void release_note(SampleInfo& info, unsigned int note, bool invalidate = false);
-
-};
-
-
-class SoundEngineData {
-public:
-	virtual SoundEngineData* copy() {
-		return new SoundEngineData();
-	}
-
-	virtual ~SoundEngineData() {
-
-	}
 };
 
 class SoundEngine {
@@ -78,7 +53,7 @@ public:
 class BaseSoundEngine : public SoundEngine {
 private:
 	KeyboardEnvironment environment;
-	NoteBuffer note;
+	VoiceManager<SimpleVoice, SOUND_ENGINE_POLYPHONY> note;
 
 public:
 	std::atomic<unsigned int> sustain_control{64};
@@ -165,7 +140,7 @@ private:
 public:
 	bool on = false;
 	ArpeggiatorPreset preset;
-	NoteBuffer note;
+	VoiceManager<SimpleVoice, SOUND_ENGINE_POLYPHONY> note;
 	Metronome metronome;
 
 	Arpeggiator();
