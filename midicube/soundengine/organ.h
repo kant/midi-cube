@@ -205,6 +205,10 @@ public:
 
 	void update_properties();
 
+	std::string get_name() {
+		return "B3 Organ";
+	}
+
 	PropertyValue get(size_t prop, size_t sub_prop = 0);
 
 	void set(size_t prop, PropertyValue value, size_t sub_prop = 0);

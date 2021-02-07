@@ -63,8 +63,3 @@ SoundFontSynth::~SoundFontSynth() {
 	delete_fluid_settings(settings);
 };
 
-template<>
-std::string get_engine_name<SoundFontSynth>() {
-	return "Soundfont Synth";
-}
-

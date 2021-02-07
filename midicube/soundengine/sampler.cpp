@@ -115,10 +115,6 @@ bool Sampler::note_finished(SampleInfo& info, SimpleVoice& voice, KeyboardEnviro
 	return !voice.note.pressed && envs[note_index].is_finished();
 }
 
-std::string Sampler::get_name() {
-	return "Sampler";
-}
-
 Sampler::~Sampler() {
 	delete sample;
 	sample = nullptr;
@@ -171,13 +167,3 @@ extern SampleSound* load_sound(std::string folder) {
 	}
 	return sound;
 }
-
-template<>
-std::string get_engine_name<Sampler>() {
-	return "Sampler";
-}
-
-void __fix_link_sampler_name__ () {
-	get_engine_name<Sampler>();
-}
-

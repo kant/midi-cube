@@ -21,7 +21,7 @@ void MidiCube::init(int out_device, int in_device) {
 	//Sound Engines
 	fill_sound_engine_device(&engine);
 	//Synth presets
-	SoundEngineBank* bank = engine.get_sound_engines().at(2);
+	/*SoundEngineBank* bank = engine.get_sound_engines().at(2);
 	apply_preset(CLEAN_SAW, static_cast<AnalogSynth&>(bank->channel(0)).preset);
 	apply_preset(PULSE_BASS, static_cast<AnalogSynth&>(bank->channel(1)).preset);
 	apply_preset(STRONG_PAD, static_cast<AnalogSynth&>(bank->channel(2)).preset);
@@ -32,22 +32,22 @@ void MidiCube::init(int out_device, int in_device) {
 	apply_preset(BRASS_PAD, static_cast<AnalogSynth&>(bank->channel(7)).preset);
 	apply_preset(FM_KALIMBA, static_cast<AnalogSynth&>(bank->channel(8)).preset);
 	apply_preset(SYNTH_BRASS, static_cast<AnalogSynth&>(bank->channel(10)).preset);
-	apply_preset(BELL_LEAD, static_cast<AnalogSynth&>(bank->channel(11)).preset);
+	apply_preset(BELL_LEAD, static_cast<AnalogSynth&>(bank->channel(11)).preset);*/
 	//Default setting
-	SoundEngineBank* bank2 = engine.get_sound_engines().at(2);
+	/*SoundEngineBank* bank2 = engine.get_sound_engines().at(2);
 	static_cast<AnalogSynth&>(bank2->channel(1)).sustain = false;
 	Arpeggiator& arp = engine.channels[1].arp;
 	arp.on = true;
 	arp.preset.octaves = 3;
 	arp.preset.pattern = ArpeggiatorPattern::ARP_UP;
 	arp.preset.value = 1;
-	arp.metronome.set_bpm(440);
+	arp.metronome.set_bpm(440);*/
 
 	//Default engines
 	engine.channels[0].active = true;
 	//engine.channels[0].vocoder_preset.on = true;
 
-	engine.channels[0].set_engine(2);
+	engine.channels[0].set_engine(0);
 
 	engine.channels[9].active = true;
 	engine.channels[9].set_engine(3);

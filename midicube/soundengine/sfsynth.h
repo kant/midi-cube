@@ -28,6 +28,10 @@ public:
 
 	void process_sample(double& lsample, double& rsample, SampleInfo& info);
 
+	std::string get_name() {
+		return "Soundfont Synth";
+	}
+
 	virtual ~SoundFontSynth();
 
 };

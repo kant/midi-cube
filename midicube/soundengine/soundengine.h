@@ -45,6 +45,8 @@ public:
 
 	virtual void process_sample(double& lsample, double& rsample, SampleInfo& info) = 0;
 
+	virtual std::string get_name() = 0;
+
 	virtual ~SoundEngine() {
 
 	};

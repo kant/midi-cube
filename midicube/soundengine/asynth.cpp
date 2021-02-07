@@ -656,11 +656,6 @@ AnalogSynth::~AnalogSynth() {
 
 }
 
-template<>
-std::string get_engine_name<AnalogSynth>() {
-	return "Analog Synthesizer";
-}
-
 PropertyValue get_mod_prop(PropertyModulation &mod,
 		SynthModulationProperty prop) {
 	PropertyValue val;

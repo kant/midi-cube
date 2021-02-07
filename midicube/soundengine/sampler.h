@@ -87,7 +87,9 @@ public:
 
 	bool note_finished(SampleInfo& info, SimpleVoice& note, KeyboardEnvironment& env, size_t note_index);
 
-	std::string get_name();
+	std::string get_name() {
+		return "Sampler";
+	}
 
 	~Sampler();
 

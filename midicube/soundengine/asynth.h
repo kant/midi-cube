@@ -235,6 +235,10 @@ public:
 
 	void update_properties();
 
+	std::string get_name() {
+		return "Analog Synth";
+	}
+
 	~AnalogSynth();
 
 };

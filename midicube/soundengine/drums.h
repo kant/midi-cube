@@ -18,8 +18,6 @@ struct SampleDrumKit {
 	std::unordered_map<unsigned int, AudioSample> notes;
 };
 
-
-
 class SampleDrums : public BaseSoundEngine<SimpleVoice, SAMPLE_DRUMS_POLYPHONY> {
 
 private:
@@ -32,6 +30,10 @@ public:
 	void process_note_sample(double& lsample, double& rsample, SampleInfo& info, SimpleVoice& note, KeyboardEnvironment& env, size_t note_index);
 
 	bool note_finished(SampleInfo& info, SimpleVoice& note, KeyboardEnvironment& env, size_t note_index);
+
+	std::string get_name() {
+		return "Sample Drums";
+	}
 
 	~SampleDrums();
 

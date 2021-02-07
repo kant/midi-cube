@@ -660,12 +660,3 @@ void B3Organ::update_properties() {
 	submit_change(B3OrganProperty::pB3SwellCC,
 			(int) data.preset.swell_cc);
 }
-
-template<>
-std::string get_engine_name<B3Organ>() {
-	return "B3 Organ";
-}
-
-void __fix_link_organ_name__ () {
-	get_engine_name<B3Organ>();
-}

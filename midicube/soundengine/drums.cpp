@@ -77,12 +77,3 @@ extern SampleDrumKit* load_drumkit(std::string folder) {
 	}
 	return drumkit;
 }
-
-template<>
-std::string get_engine_name<SampleDrums>() {
-	return "Sample Drums";
-}
-
-void __fix_link_drums_name__ () {
-	get_engine_name<SampleDrums>();
-}
