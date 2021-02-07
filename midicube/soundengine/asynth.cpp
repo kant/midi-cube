@@ -527,9 +527,6 @@ void AnalogSynth::process_sample(double& lsample, double& rsample,
 
 	//Delay lines
 	if (preset.delay_mix) {
-		//Get samples
-		double lsample = 0;
-		double rsample = 0;
 		//Apply delay
 		ldelay.add_isample(lsample, preset.delay_time * info.sample_rate);
 		rdelay.add_isample(rsample, preset.delay_time * info.sample_rate);
@@ -1013,7 +1010,7 @@ void SynthPartPropertyHolder::update_properties() {
 			lfo.freq);
 	PropertyHolder::submit_change(SynthPartProperty::pSynthLFOWaveForm,
 			(int) lfo.waveform);
-	submit_change(SynthPartProperty::pSynthEnvVolume, lfo.volume);
+	submit_change(SynthPartProperty::pSynthLFOVolume, lfo.volume);
 }
 
 void AnalogSynth::update_properties() {
