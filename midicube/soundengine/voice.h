@@ -71,7 +71,7 @@ template<typename V, size_t N>
 void VoiceManager<V, N>::release_note(SampleInfo& info, unsigned int channel, unsigned int note, bool invalidate) {
 	for (size_t i = 0; i < N; ++i) {
 		TriggeredNote& n = this->note[i].note;
-		if (n.note == note && n.pressed) {
+		if (n.channel == channel && n.note == note && n.pressed) {
 			n.pressed = false;
 			n.release_time = info.time;
 			if (invalidate) {

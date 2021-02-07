@@ -24,28 +24,28 @@ SoundFontSynth::SoundFontSynth() {
 void SoundFontSynth::midi_message(MidiMessage& msg, SampleInfo& info) {
 	switch (msg.type) {
 	case MessageType::NOTE_ON:
-		fluid_synth_noteon(synth, 0, msg.note(), msg.velocity());
+		fluid_synth_noteon(synth, msg.channel, msg.note(), msg.velocity());
 		break;
 	case MessageType::NOTE_OFF:
-		fluid_synth_noteoff(synth, 0, msg.note());
+		fluid_synth_noteoff(synth, msg.channel, msg.note());
 		break;
 	case MessageType::CONTROL_CHANGE:
-		fluid_synth_cc(synth, 0, msg.control(), msg.value());
+		fluid_synth_cc(synth, msg.channel, msg.control(), msg.value());
 		break;
 	case MessageType::PITCH_BEND:
-		fluid_synth_pitch_bend(synth, 0, msg.get_pitch_bend());
+		fluid_synth_pitch_bend(synth, msg.channel, msg.get_pitch_bend());
 		break;
 	default:
 		break;
 	}
 }
 
-void SoundFontSynth::press_note(SampleInfo& info, unsigned int note, double velocity) {
-	fluid_synth_noteon(synth, 0, note, velocity * 127);
+void SoundFontSynth::press_note(SampleInfo& info, unsigned int channel, unsigned int note, double velocity) {
+	fluid_synth_noteon(synth, channel, note, velocity * 127);
 }
 
-void SoundFontSynth::release_note(SampleInfo& info, unsigned int note) {
-	fluid_synth_noteoff(synth, 0, note);
+void SoundFontSynth::release_note(SampleInfo& info, unsigned int channel, unsigned int note) {
+	fluid_synth_noteoff(synth, channel, note);
 }
 
 void SoundFontSynth::process_sample(double& lsample, double& rsample, SampleInfo& info) {

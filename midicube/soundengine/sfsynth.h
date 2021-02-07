@@ -22,9 +22,9 @@ public:
 
 	void midi_message(MidiMessage& msg, SampleInfo& info);
 
-	void press_note(SampleInfo& info, unsigned int note, double velocity);
+	void press_note(SampleInfo& info, unsigned int channel, unsigned int note, double velocity);
 
-	void release_note(SampleInfo& info, unsigned int note);
+	void release_note(SampleInfo& info, unsigned int channel, unsigned int note);
 
 	void process_sample(double& lsample, double& rsample, SampleInfo& info);
 
