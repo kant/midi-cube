@@ -159,34 +159,8 @@ void BaseSoundEngine<V, N>::process_sample(double& lsample, double& rsample, Sam
 	process_sample(lsample, rsample, info, environment, status);
 }
 
-
-class SoundEngineBank {
-public:
-	virtual SoundEngine& channel(unsigned int channel) = 0;
-
-	virtual std::string get_name() = 0;
-
-	virtual ~SoundEngineBank() {
-
-	};
-};
-
 template <typename T>
 std::string get_engine_name();
-
-template <typename T>
-class TemplateSoundEngineBank : public SoundEngineBank {
-private:
-	std::array<T, SOUND_ENGINE_MIDI_CHANNELS> engines;
-
-public:
-	inline SoundEngine& channel(unsigned int channel) {
-		return engines[channel];
-	}
-	std::string get_name() {
-		return get_engine_name<T>();
-	}
-};
 
 struct ChannelSource {
 	ssize_t input = -1;
@@ -260,7 +234,7 @@ public:
 
 	void update_properties();
 
-	inline SoundEngine* get_engine(std::vector<SoundEngineBank*>& engines, unsigned int channel);
+	inline SoundEngine* get_engine(std::vector<SoundEngine*>& engines);
 
 	/**
 	 * May only be called from GUI thread after GUI has started
@@ -281,7 +255,7 @@ enum SoundEngineProperty {
 class SoundEngineDevice : public PropertyHolder {
 
 private:
-	std::vector<SoundEngineBank*> sound_engines;
+	std::vector<SoundEngine*> sound_engines;
 
 	ADSREnvelopeData metronome_env_data{0.0005, 0.02, 0, 0};
 	ADSREnvelope metronome_env;
@@ -293,9 +267,9 @@ public:
 
 	SoundEngineDevice();
 
-	std::vector<SoundEngineBank*> get_sound_engines();
+	std::vector<SoundEngine*> get_sound_engines();
 
-	void add_sound_engine(SoundEngineBank* engine);
+	void add_sound_engine(SoundEngine* engine);
 
 	void send(MidiMessage& message, SampleInfo& info);
 

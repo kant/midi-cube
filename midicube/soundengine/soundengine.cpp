@@ -343,7 +343,7 @@ SoundEngineDevice::~SoundEngineDevice() {
 		channels[i].set_engine(-1);
 	}
 	//Delete engines
-	for (SoundEngineBank* engine : sound_engines) {
+	for (SoundEngine* engine : sound_engines) {
 		delete engine;
 	}
 	sound_engines.clear();
