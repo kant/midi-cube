@@ -247,10 +247,10 @@ ssize_t SoundEngineChannel::get_engine() {
 	return engine_index;
 }
 
-inline SoundEngine* SoundEngineChannel::get_engine(std::vector<SoundEngineBank*>& engines, unsigned int channel) {
+inline SoundEngine* SoundEngineChannel::get_engine(std::vector<SoundEngine*>& engines) {
 	ssize_t engine_index = this->engine_index;
 	if (engine_index >= 0 && engine_index < (ssize_t) engines.size()) {
-		return &engines[engine_index]->channel(channel);
+		return engines[engine_index];
 	}
 	return nullptr;
 }
@@ -269,7 +269,7 @@ void SoundEngineDevice::process_sample(double& lsample, double& rsample, SampleI
 	//Channels
 	for (size_t i = 0; i < this->channels.size(); ++i) {
 		SoundEngineChannel& ch = this->channels[i];
-		SoundEngine* engine = ch.get_engine(sound_engines, i);
+		SoundEngine* engine = ch.get_engine(sound_engines);
 		ch.process_sample(lsample, rsample, info, metronome, engine);
 	}
 	//Metronome
@@ -286,17 +286,17 @@ void SoundEngineDevice::process_sample(double& lsample, double& rsample, SampleI
 	}
 }
 
-std::vector<SoundEngineBank*> SoundEngineDevice::get_sound_engines() {
+std::vector<SoundEngine*> SoundEngineDevice::get_sound_engines() {
 	return sound_engines;
 }
 
-void SoundEngineDevice::add_sound_engine(SoundEngineBank* engine) {
+void SoundEngineDevice::add_sound_engine(SoundEngine* engine) {
 	sound_engines.push_back(engine);
 }
 
 void SoundEngineDevice::send(MidiMessage &message, SampleInfo& info) {
 	SoundEngineChannel& ch = this->channels[message.channel];
-	SoundEngine* engine = ch.get_engine(sound_engines, message.channel);
+	SoundEngine* engine = ch.get_engine(sound_engines);
 	if (engine) {
 		ch.send(message, info, *engine);
 	}
