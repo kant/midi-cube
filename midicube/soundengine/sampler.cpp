@@ -98,20 +98,21 @@ Sampler::Sampler() {
 	sample = load_sound("./data/samples/piano");
 }
 
-void Sampler::process_note_sample(double& lsample, double& rsample, SampleInfo& info, TriggeredNote& note, KeyboardEnvironment& env, size_t note_index) {
+void Sampler::process_note_sample(double& lsample, double& rsample, SampleInfo& info, SimpleVoice& voice, KeyboardEnvironment& env, size_t note_index) {
 	ADSREnvelopeData e = this->sample->get_envelope();
 	ADSREnvelope& en = envs[note_index];
 	if (en.is_finished()) {
 		en.reset();
 	}
 
+	TriggeredNote& note = voice.note;
 	double vol = en.amplitude(e, info.time_step, note.pressed, env.sustain);
 	lsample += this->sample->get_sample(0, info, note, env) * note.velocity * vol;
 	rsample += this->sample->get_sample(1, info, note, env) * note.velocity * vol;
 }
 
-bool Sampler::note_finished(SampleInfo& info, TriggeredNote& note, KeyboardEnvironment& env, size_t note_index) {
-	return !note.pressed && envs[note_index].is_finished();
+bool Sampler::note_finished(SampleInfo& info, SimpleVoice& voice, KeyboardEnvironment& env, size_t note_index) {
+	return !voice.note.pressed && envs[note_index].is_finished();
 }
 
 std::string Sampler::get_name() {

@@ -18,8 +18,9 @@ SampleDrums::SampleDrums () {
 	drumkit = load_drumkit("./data/drumkits/drums1");
 }
 
-void SampleDrums::process_note_sample(double& lsample, double& rsample, SampleInfo& info, TriggeredNote& note, KeyboardEnvironment& env, size_t note_index) {
+void SampleDrums::process_note_sample(double& lsample, double& rsample, SampleInfo& info, SimpleVoice& voice, KeyboardEnvironment& env, size_t note_index) {
 	try {
+		TriggeredNote& note = voice.note;
 		if (drumkit->notes.find(note.note) != drumkit->notes.end()) {
 			AudioSample& audio = drumkit->notes[note.note];
 			lsample += audio.sample(0, info.time - note.start_time, info.sample_rate);
@@ -32,9 +33,9 @@ void SampleDrums::process_note_sample(double& lsample, double& rsample, SampleIn
 	}
 }
 
-bool SampleDrums::note_finished(SampleInfo& info, TriggeredNote& note, KeyboardEnvironment& env, size_t note_index) {
-	if (drumkit->notes.find(note.note) != drumkit->notes.end()) {
-		return info.time - note.start_time > (double) drumkit->notes[note.note].duration();
+bool SampleDrums::note_finished(SampleInfo& info, SimpleVoice& note, KeyboardEnvironment& env, size_t note_index) {
+	if (drumkit->notes.find(note.note.note) != drumkit->notes.end()) {
+		return info.time - note.note.start_time > (double) drumkit->notes[note.note.note].duration();
 	}
 	return true;
 }

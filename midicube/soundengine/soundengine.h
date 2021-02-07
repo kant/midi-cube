@@ -27,10 +27,11 @@
 
 class SoundEngineDevice;
 
+template<typename V>
 struct EngineStatus {
 	size_t pressed_notes;
 	size_t latest_note_index;
-	TriggeredNote* latest_note;
+	V* latest_note;
 };
 
 class SoundEngine {
@@ -70,7 +71,7 @@ public:
 
 	virtual void process_note_sample(double& lsample, double& rsample, SampleInfo& info, V& voice, KeyboardEnvironment& env, size_t note_index) = 0;
 
-	virtual void process_sample(double& lsample, double& rsample, SampleInfo& info, KeyboardEnvironment& env, EngineStatus& status) {
+	virtual void process_sample(double& lsample, double& rsample, SampleInfo& info, KeyboardEnvironment& env, EngineStatus<V>& status) {
 
 	};
 
@@ -135,7 +136,7 @@ void BaseSoundEngine<V, N>::release_note(SampleInfo& info, unsigned int note) {
 
 template<typename V, size_t N>
 void BaseSoundEngine<V, N>::process_sample(double& lsample, double& rsample, SampleInfo& info) {
-	EngineStatus status = {0, 0, nullptr};
+	EngineStatus<V> status = {0, 0, nullptr};
 	//Notes
 	for (size_t i = 0; i < SOUND_ENGINE_POLYPHONY; ++i) {
 		TriggeredNote& n = voice_mgr.note[i].note;
@@ -147,8 +148,8 @@ void BaseSoundEngine<V, N>::process_sample(double& lsample, double& rsample, Sam
 				++status.pressed_notes; //TODO might cause problems in the future
 				n.phase_shift += (environment.pitch_bend - 1) * info.time_step;
 				process_note_sample(lsample, rsample, info, voice_mgr.note[i], environment, i);
-				if (!status.latest_note || status.latest_note->start_time < n.start_time) {
-					status.latest_note = &n;
+				if (!status.latest_note || status.latest_note->note.start_time < n.start_time) {
+					status.latest_note = &voice_mgr.note[i];
 					status.latest_note_index = i;
 				}
 			}

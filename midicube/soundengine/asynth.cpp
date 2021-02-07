@@ -494,10 +494,10 @@ void AnalogSynth::process_note_sample(
 }
 
 void AnalogSynth::process_sample(double& lsample, double& rsample,
-		SampleInfo &info, KeyboardEnvironment &env, EngineStatus &status) {
+		SampleInfo &info, KeyboardEnvironment &env, EngineStatus<SimpleVoice> &status) {
 	//Mono
 	if (preset.mono && status.latest_note) {
-		unsigned int note = status.latest_note->note;
+		unsigned int note = status.latest_note->note.note;
 		//Update portamendo
 		if (note != last_note) {
 			//Reset envs to attack
@@ -520,7 +520,7 @@ void AnalogSynth::process_sample(double& lsample, double& rsample,
 		double pitch = note_port.get(info.time);
 		KeyboardEnvironment e = env;
 		e.pitch_bend *= note_to_freq_transpose(
-				pitch - status.latest_note->note);
+				pitch - status.latest_note->note.note);
 
 		process_note(lsample, rsample, info, *status.latest_note, e, 0);
 	}
