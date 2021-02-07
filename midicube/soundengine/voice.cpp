@@ -13,7 +13,7 @@ Arpeggiator::Arpeggiator() {
 
 }
 
-void Arpeggiator::apply(SampleInfo& info, std::function<void(SampleInfo&, unsigned int, double)> press, std::function<void(SampleInfo&, unsigned int)> release) {
+void Arpeggiator::apply(SampleInfo& info, std::function<void(SampleInfo&, unsigned int, unsigned int, double)> press, std::function<void(SampleInfo&, unsigned int, unsigned int)> release) {
 	//Reset if no keys are pressed
 	if (!restart) {
 		bool released = true;
@@ -100,18 +100,18 @@ void Arpeggiator::apply(SampleInfo& info, std::function<void(SampleInfo&, unsign
 			break;
 		}
 		//Press note
-		release(info, curr_note);
+		release(info, this->note.note[note_index].note.channel, curr_note);
 		if (next_index >= 0) {
 			curr_note = next_note;
 			this->note_index = next_index;
-			press(info, curr_note, this->note.note[note_index].note.velocity);
+			press(info, this->note.note[note_index].note.channel, curr_note, this->note.note[note_index].note.velocity);
 			restart = false;
 		}
 	}
 }
 
 void Arpeggiator::press_note(SampleInfo& info, unsigned int note, double velocity) {
-	this->note.press_note(info, note, velocity);
+	this->note.press_note(info, 0 /* FIXME */, note, velocity);
 }
 
 void Arpeggiator::release_note(SampleInfo& info, unsigned int note) {

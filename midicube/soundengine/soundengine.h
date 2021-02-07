@@ -39,9 +39,9 @@ class SoundEngine {
 public:
 	virtual void midi_message(MidiMessage& msg, SampleInfo& info) = 0;
 
-	virtual void press_note(SampleInfo& info, unsigned int note, double velocity) = 0;
+	virtual void press_note(SampleInfo& info, unsigned int channel, unsigned int note, double velocity) = 0;
 
-	virtual void release_note(SampleInfo& info, unsigned int note) = 0;
+	virtual void release_note(SampleInfo& info, unsigned int channel, unsigned int note) = 0;
 
 	virtual void process_sample(double& lsample, double& rsample, SampleInfo& info) = 0;
 
@@ -65,9 +65,9 @@ public:
 
 	void midi_message(MidiMessage& msg, SampleInfo& info);
 
-	void press_note(SampleInfo& info, unsigned int note, double velocity);
+	void press_note(SampleInfo& info, unsigned int channel, unsigned int note, double velocity);
 
-	void release_note(SampleInfo& info, unsigned int note);
+	void release_note(SampleInfo& info, unsigned int channel, unsigned int note);
 
 	void process_sample(double& lsample, double& rsample, SampleInfo& info);
 
@@ -77,7 +77,7 @@ public:
 
 	};
 
-	virtual void control_change(unsigned int control, unsigned int value) {
+	virtual void control_change(unsigned int channel, unsigned int control, unsigned int value) {
 
 	};
 
@@ -96,13 +96,13 @@ void BaseSoundEngine<V, N>::midi_message(MidiMessage& message, SampleInfo& info)
 	double pitch;
 	switch (message.type) {
 		case MessageType::NOTE_ON:
-			press_note(info, message.note(), message.velocity()/127.0);
+			press_note(info, message.channel, message.note(), message.velocity()/127.0);
 			break;
 		case MessageType::NOTE_OFF:
-			release_note(info, message.note());
+			release_note(info, message.channel, message.note());
 			break;
 		case MessageType::CONTROL_CHANGE:
-			control_change(message.control(), message.value());
+			control_change(message.channel, message.control(), message.value());
 			//Sustain
 			if (message.control() == sustain_control) {
 				bool new_sustain = message.value() != 0;
@@ -127,13 +127,13 @@ void BaseSoundEngine<V, N>::midi_message(MidiMessage& message, SampleInfo& info)
 }
 
 template<typename V, size_t N>
-void BaseSoundEngine<V, N>::press_note(SampleInfo& info, unsigned int note, double velocity) {
-	this->voice_mgr.press_note(info, note, velocity);
+void BaseSoundEngine<V, N>::press_note(SampleInfo& info, unsigned int channel, unsigned int note, double velocity) {
+	this->voice_mgr.press_note(info, channel, note, velocity);
 }
 
 template<typename V, size_t N>
-void BaseSoundEngine<V, N>::release_note(SampleInfo& info, unsigned int note) {
-	this->voice_mgr.release_note(info, note);
+void BaseSoundEngine<V, N>::release_note(SampleInfo& info, unsigned int channel, unsigned int note) {
+	this->voice_mgr.release_note(info, channel, note);
 }
 
 template<typename V, size_t N>

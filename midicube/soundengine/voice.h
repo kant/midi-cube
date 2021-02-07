@@ -27,8 +27,8 @@ public:
 
 	VoiceManager();
 
-	void press_note(SampleInfo& info, unsigned int note, double velocity);
-	void release_note(SampleInfo& info, unsigned int note, bool invalidate = false);
+	void press_note(SampleInfo& info, unsigned int channel, unsigned int note, double velocity);
+	void release_note(SampleInfo& info, unsigned int channel, unsigned int note, bool invalidate = false);
 
 };
 
@@ -53,9 +53,10 @@ size_t VoiceManager<V, N>::next_freq_slot(SampleInfo& info) {
 }
 
 template<typename V, size_t N>
-void VoiceManager<V, N>::press_note(SampleInfo& info, unsigned int note, double velocity) {
+void VoiceManager<V, N>::press_note(SampleInfo& info, unsigned int channel, unsigned int note, double velocity) {
 	size_t slot = next_freq_slot(info);
 	TriggeredNote& n = this->note[slot].note;
+	n.channel = channel;
 	n.freq = note_to_freq(note);
 	n.velocity = velocity;
 	n.note = note;
@@ -67,7 +68,7 @@ void VoiceManager<V, N>::press_note(SampleInfo& info, unsigned int note, double 
 }
 
 template<typename V, size_t N>
-void VoiceManager<V, N>::release_note(SampleInfo& info, unsigned int note, bool invalidate) {
+void VoiceManager<V, N>::release_note(SampleInfo& info, unsigned int channel, unsigned int note, bool invalidate) {
 	for (size_t i = 0; i < N; ++i) {
 		TriggeredNote& n = this->note[i].note;
 		if (n.note == note && n.pressed) {
@@ -110,7 +111,7 @@ public:
 
 	Arpeggiator();
 
-	void apply(SampleInfo& info, std::function<void(SampleInfo&, unsigned int, double)> press, std::function<void(SampleInfo&, unsigned int)> release);
+	void apply(SampleInfo& info, std::function<void(SampleInfo&, unsigned int, unsigned int, double)> press, std::function<void(SampleInfo&, unsigned int, unsigned int)> release);
 
 	void press_note(SampleInfo& info, unsigned int note, double velocity);
 

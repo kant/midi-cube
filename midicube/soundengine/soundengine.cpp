@@ -21,11 +21,11 @@ void SoundEngineChannel::process_sample(double& lsample, double& rsample, Sample
 		//Arpeggiator
 		if (arp.on) {
 			arp.apply(info,
-			[engine](SampleInfo& i, unsigned int note, double velocity) {
-				engine->press_note(i, note, velocity);
+			[engine](SampleInfo& i, unsigned int channel, unsigned int note, double velocity) {
+				engine->press_note(i, channel, note, velocity);
 			},
-			[engine](SampleInfo& i, unsigned int note) {
-				engine->release_note(i, note);
+			[engine](SampleInfo& i, unsigned int channel, unsigned int note) {
+				engine->release_note(i, channel, note);
 			});
 		}
 		//Process
@@ -52,10 +52,10 @@ void SoundEngineChannel::send(MidiMessage &message, SampleInfo& info, SoundEngin
 		if (arp.on) {
 			switch (message.type) {
 			case MessageType::NOTE_ON:
-				arp.note.press_note(info, message.note(), message.velocity()/127.0);
+				arp.note.press_note(info, message.channel, message.note(), message.velocity()/127.0);
 				break;
 			case MessageType::NOTE_OFF:
-				arp.note.release_note(info, message.note(), true);
+				arp.note.release_note(info, message.channel, message.note(), true);
 				break;
 			default:
 				engine.midi_message(message, info);

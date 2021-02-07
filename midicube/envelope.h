@@ -23,6 +23,7 @@ struct TriggeredNote {
 	double aftertouch = 0;
 	double phase_shift = 0;
 	bool valid = false;
+	unsigned int channel = 0;
 };
 
 struct KeyboardEnvironment {
