@@ -26,7 +26,15 @@ public:
 
 	void release_note(SampleInfo& info, unsigned int channel, unsigned int note);
 
-	void process_channel_sample(double& lsample, double& rsample, SampleInfo& info);
+	void process_voices(std::array<double, SOUND_ENGINE_MIDI_CHANNELS>& lsample, std::array<double, SOUND_ENGINE_MIDI_CHANNELS>& rsample, SampleInfo& info,  ssize_t index, std::array<SoundEngineChannel, SOUND_ENGINE_MIDI_CHANNELS>& channels) {
+
+	}
+
+	void process_channel(double& lsample, double& rsample, unsigned int channel, SampleInfo& info) {
+
+	};
+
+	void process_sample(double& lsample, double& rsample, SampleInfo& info);
 
 	std::string get_name() {
 		return "Soundfont Synth";

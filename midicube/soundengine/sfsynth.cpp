@@ -48,14 +48,14 @@ void SoundFontSynth::release_note(SampleInfo& info, unsigned int channel, unsign
 	fluid_synth_noteoff(synth, channel, note);
 }
 
-void SoundFontSynth::process_channel_sample(double& lsample, double& rsample, SampleInfo& info) {
+void SoundFontSynth::process_sample(double& lsample, double& rsample, SampleInfo& info) {
 	float left = 0;
 	float right = 0;
 	fluid_synth_write_float(synth, 1, &left, 0, 1, &right, 0, 1);
 
 	//Play
-	lsample += left * 5;
-	rsample += right * 5;
+	lsample = left * 5;
+	rsample = right * 5;
 }
 
 SoundFontSynth::~SoundFontSynth() {
