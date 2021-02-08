@@ -30,7 +30,7 @@ void SoundEngineChannel::process_sample(double& lsample, double& rsample, Sample
 		}
 		//Process
 		if (active) {
-			engine->process_sample(l, r, info);
+			engine->process_channel_sample(l, r, info);
 		}
 		//Vocoder
 		vocoder.apply(l, r, info.input_sample, vocoder_preset, info);

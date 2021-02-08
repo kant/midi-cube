@@ -564,7 +564,7 @@ void AnalogSynth::control_change(unsigned int control, unsigned int value) {
 	controls[control] = value / 127.0;
 }
 
-bool AnalogSynth::note_finished(SampleInfo &info, SimpleVoice& voice,
+bool AnalogSynth::voice_finished(SampleInfo &info, SimpleVoice& voice,
 		KeyboardEnvironment &env, size_t note_index) {
 	//Mono notes
 	if (preset.mono) {	//TODO not very easy to read/side effects

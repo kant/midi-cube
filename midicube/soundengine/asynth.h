@@ -227,7 +227,7 @@ public:
 
 	void control_change(unsigned int control, unsigned int value);
 
-	bool note_finished(SampleInfo& info, SimpleVoice& voice, KeyboardEnvironment& env, size_t note_index);
+	bool voice_finished(SampleInfo& info, SimpleVoice& voice, KeyboardEnvironment& env, size_t note_index);
 	
 	void set(size_t prop, PropertyValue value, size_t sub_prop);
 	

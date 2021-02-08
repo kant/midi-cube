@@ -26,7 +26,7 @@ public:
 
 	void release_note(SampleInfo& info, unsigned int channel, unsigned int note);
 
-	void process_sample(double& lsample, double& rsample, SampleInfo& info);
+	void process_channel_sample(double& lsample, double& rsample, SampleInfo& info);
 
 	std::string get_name() {
 		return "Soundfont Synth";

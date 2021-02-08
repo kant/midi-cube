@@ -111,7 +111,7 @@ void Sampler::process_note_sample(double& lsample, double& rsample, SampleInfo& 
 	rsample += this->sample->get_sample(1, info, note, env) * note.velocity * vol;
 }
 
-bool Sampler::note_finished(SampleInfo& info, SimpleVoice& voice, KeyboardEnvironment& env, size_t note_index) {
+bool Sampler::voice_finished(SampleInfo& info, SimpleVoice& voice, KeyboardEnvironment& env, size_t note_index) {
 	return !voice.note.pressed && envs[note_index].is_finished();
 }
 

@@ -33,7 +33,7 @@ void SampleDrums::process_note_sample(double& lsample, double& rsample, SampleIn
 	}
 }
 
-bool SampleDrums::note_finished(SampleInfo& info, SimpleVoice& note, KeyboardEnvironment& env, size_t note_index) {
+bool SampleDrums::voice_finished(SampleInfo& info, SimpleVoice& note, KeyboardEnvironment& env, size_t note_index) {
 	if (drumkit->notes.find(note.note.note) != drumkit->notes.end()) {
 		return info.time - note.note.start_time > (double) drumkit->notes[note.note.note].duration();
 	}
