@@ -226,7 +226,7 @@ enum SoundEngineChannelProperty {
 
 class SoundEngineChannel : public PropertyHolder {
 public:
-	ssize_t engine_index{0};
+	std::atomic<ssize_t> engine_index{0};
 
 	double volume{0.3};
 	bool active{false};

@@ -297,9 +297,8 @@ void SoundEngineDevice::process_sample(double& lsample, double& rsample, SampleI
 
 void SoundEngineDevice::send(MidiMessage &message, SampleInfo& info) {
 	SoundEngineChannel& ch = this->channels[message.channel];
-	SoundEngine* engine = ch.get_engine(sound_engines);
-	if (engine) {
-		ch.send(message, info, *engine);
+	if (ch.active && ch.engine_index > 0 && ch.engine_index < SOUND_ENGINE_COUNT) {
+		ch.send(message, info, *sound_engines[ch.engine_index]);
 	}
 }
 
@@ -347,5 +346,4 @@ SoundEngineDevice::~SoundEngineDevice() {
 	for (SoundEngine* engine : sound_engines) {
 		delete engine;
 	}
-	sound_engines.clear();
 }
