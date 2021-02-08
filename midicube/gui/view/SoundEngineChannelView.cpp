@@ -29,7 +29,7 @@ Scene SoundEngineChannelView::create(Frame &frame) {
 	//Sound engines
 	std::vector<std::string> engine_names;
 	engine_names.push_back("None");
-	for (SoundEngine* engine : frame.cube.engine.get_sound_engines()) {
+	for (SoundEngine* engine : frame.cube.engine.sound_engines) {
 		engine_names.push_back(engine->get_name());
 	}
 
@@ -57,8 +57,8 @@ Scene SoundEngineChannelView::create(Frame &frame) {
 		//TODO not optimal solution
 		ssize_t engine_index = channel.get_engine();
 		if (engine_index >= 0) {
-			std::string name = frame.cube.engine.get_sound_engines().at(engine_index)->get_name();
-			SoundEngine& en = *frame.cube.engine.get_sound_engines().at(engine_index); //TODO
+			std::string name = frame.cube.engine.sound_engines.at(engine_index)->get_name();
+			SoundEngine& en = *frame.cube.engine.sound_engines.at(engine_index); //TODO
 			ViewController* view = create_view_for_engine(name, en, channel, channel_index);
 			if (view) {
 				frame.change_view(view);
