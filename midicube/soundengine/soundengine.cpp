@@ -256,18 +256,30 @@ SoundEngineDevice::SoundEngineDevice() : metronome(120){
 void SoundEngineDevice::process_sample(double& lsample, double& rsample, SampleInfo &info) {
 	//Channels
 	//Notes
-	std::array<double, SOUND_ENGINE_MIDI_CHANNELS> lsample_buffer = {};	//TODO one array per channel would probably be enough
-	std::array<double, SOUND_ENGINE_MIDI_CHANNELS> rsample_buffer = {};
+	std::array<std::array<double, SOUND_ENGINE_MIDI_CHANNELS>, SOUND_ENGINE_COUNT> lsample_buffer = {};	//TODO one array per channel would probably be enough
+	std::array<std::array<double, SOUND_ENGINE_MIDI_CHANNELS>, SOUND_ENGINE_COUNT> rsample_buffer = {};
 	for (size_t i = 0; i < SOUND_ENGINE_COUNT; ++i) {
-		sound_engines[i]->process_voices(lsample_buffer, rsample_buffer, info, (ssize_t) i, channels);
+		sound_engines[i]->process_voices(lsample_buffer[i], rsample_buffer[i], info, (ssize_t) i, channels);
 	}
 	//Channels
 	for (size_t i = 0; i < SOUND_ENGINE_MIDI_CHANNELS; ++i) {
 		SoundEngineChannel& ch = this->channels[i];
 		if (ch.engine_index > 0 && ch.engine_index < SOUND_ENGINE_COUNT) {
 			SoundEngine* engine = sound_engines[i];
-			ch.process_sample(lsample, rsample, info, i, metronome, engine);
+			ch.process_sample(lsample_buffer[ch.engine_index][i], rsample_buffer[ch.engine_index][i], info, i, metronome, engine);
 		}
+	}
+	//Engine wide
+	for (size_t i = 0; i < SOUND_ENGINE_COUNT; ++i) {
+		double ls = 0;
+		double rs = 0;
+		for (size_t j = 0; j < SOUND_ENGINE_MIDI_CHANNELS; ++j) {
+			ls += lsample_buffer[i][j];
+			rs += rsample_buffer[i][j];
+		}
+		sound_engines[i]->process_sample(ls, rs, info);
+		lsample += ls;
+		rsample += ls;
 	}
 	//Metronome
 	if (play_metronome) {
