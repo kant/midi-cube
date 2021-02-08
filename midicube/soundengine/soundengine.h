@@ -84,7 +84,7 @@ public:
 
 	};
 
-	void process_channel_sample(double& lsample, double& rsample, SampleInfo& info);
+	void process_channel(double& lsample, double& rsample, unsigned int channel, SampleInfo& info);
 
 	void process_voices(std::array<double, SOUND_ENGINE_MIDI_CHANNELS>& lsample, std::array<double, SOUND_ENGINE_MIDI_CHANNELS>& rsample, SampleInfo& info,  ssize_t index, std::array<SoundEngineChannel, SOUND_ENGINE_MIDI_CHANNELS>& channels);
 
@@ -155,19 +155,19 @@ void BaseSoundEngine<V, N>::release_note(SampleInfo& info, unsigned int channel,
 }
 
 template<typename V, size_t N>
-void BaseSoundEngine<V, N>::process_channel_sample(double& lsample, double& rsample, SampleInfo& info) {
+void BaseSoundEngine<V, N>::process_voices(std::array<double, SOUND_ENGINE_MIDI_CHANNELS>& lsample, std::array<double, SOUND_ENGINE_MIDI_CHANNELS>& rsample, SampleInfo& info,  ssize_t index, std::array<SoundEngineChannel, SOUND_ENGINE_MIDI_CHANNELS>& channels) {
 	EngineStatus<V> status = {0, 0, nullptr};
 	//Notes
-	for (size_t i = 0; i < SOUND_ENGINE_POLYPHONY; ++i) {
+	for (size_t i = 0; i < N; ++i) {
 		TriggeredNote& n = voice_mgr.note[i].note;
 		if (n.valid) {
-			if (note_finished(info, voice_mgr.note[i], environment, i)) {
+			if (voice_finished(info, voice_mgr.note[i], environment, i)) {
 				n.valid = false;
 			}
 			else {
 				++status.pressed_notes; //TODO might cause problems in the future
 				n.phase_shift += (environment.pitch_bend - 1) * info.time_step;
-				process_note_sample(lsample, rsample, info, voice_mgr.note[i], environment, i);
+				process_voice_sample(lsample[n.channel], rsample[n.channel], info, voice_mgr.note[i], environment, i);
 				if (!status.latest_note || status.latest_note->note.start_time < n.start_time) {
 					status.latest_note = &voice_mgr.note[i];
 					status.latest_note_index = i;
@@ -175,8 +175,11 @@ void BaseSoundEngine<V, N>::process_channel_sample(double& lsample, double& rsam
 			}
 		}
 	}
-	//Static sample
-	process_sample(lsample, rsample, info, environment, status);
+}
+
+template<typename V, size_t N>
+void BaseSoundEngine<V, N>::process_channel(double& lsample, double& rsample, unsigned int channel, SampleInfo& info) {
+
 }
 
 template <typename T>
