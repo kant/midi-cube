@@ -35,6 +35,8 @@ struct EngineStatus {
 	V* latest_note;
 };
 
+class SoundEngineChannel;
+
 class SoundEngine {
 
 public:
@@ -45,7 +47,7 @@ public:
 	virtual void release_note(SampleInfo& info, unsigned int channel, unsigned int note) = 0;
 
 	//Process voices
-	virtual void process_voices(std::array<double, SOUND_ENGINE_MIDI_CHANNELS>& lsample, std::array<double, SOUND_ENGINE_MIDI_CHANNELS>& rsample, SampleInfo& info) = 0;
+	virtual void process_voices(std::array<double, SOUND_ENGINE_MIDI_CHANNELS>& lsample, std::array<double, SOUND_ENGINE_MIDI_CHANNELS>& rsample, SampleInfo& info,  ssize_t index, std::array<SoundEngineChannel, SOUND_ENGINE_MIDI_CHANNELS>& channels) = 0;
 
 	//(Post-) process each channel
 	virtual void process_channel(double& lsample, double& rsample, unsigned int channel, SampleInfo& info) = 0;
@@ -84,7 +86,7 @@ public:
 
 	void process_channel_sample(double& lsample, double& rsample, SampleInfo& info);
 
-	void process_voices(std::array<double, SOUND_ENGINE_MIDI_CHANNELS>& lsample, std::array<double, SOUND_ENGINE_MIDI_CHANNELS>& rsample, SampleInfo& info) = 0;
+	void process_voices(std::array<double, SOUND_ENGINE_MIDI_CHANNELS>& lsample, std::array<double, SOUND_ENGINE_MIDI_CHANNELS>& rsample, SampleInfo& info,  ssize_t index, std::array<SoundEngineChannel, SOUND_ENGINE_MIDI_CHANNELS>& channels);
 
 	//Virtual methods
 	virtual void process_voice_sample(double& lsample, double& rsample, SampleInfo& info, V& voice, KeyboardEnvironment& env, size_t note_index) = 0;
@@ -223,10 +225,9 @@ enum SoundEngineChannelProperty {
 };
 
 class SoundEngineChannel : public PropertyHolder {
-private:
-	std::atomic<ssize_t> engine_index{0};
-
 public:
+	ssize_t engine_index{0};
+
 	double volume{0.3};
 	bool active{false};
 	double panning = 0;
@@ -244,15 +245,13 @@ public:
 
 	void send(MidiMessage& message, SampleInfo& info, SoundEngine& engine);
 
-	void process_sample(double& lsample, double& rsample, SampleInfo& info, Metronome& metronome, SoundEngine* engine);
+	void process_sample(double& lsample, double& rsample, SampleInfo& info, unsigned int channel, Metronome& metronome, SoundEngine* engine);
 
 	PropertyValue get(size_t prop, size_t sub_prop);
 
 	void set(size_t prop, PropertyValue value, size_t sub_prop);
 
 	void update_properties();
-
-	inline SoundEngine* get_engine(std::vector<SoundEngine*>& engines);
 
 	/**
 	 * May only be called from GUI thread after GUI has started

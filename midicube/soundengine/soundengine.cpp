@@ -13,11 +13,9 @@ SoundEngineChannel::SoundEngineChannel() {
 	engine_index = -1;
 }
 
-void SoundEngineChannel::process_sample(double& lsample, double& rsample, SampleInfo &info, Metronome& metronome, SoundEngine* engine) {
-	//Properties
-	if (engine) {
-		double l = 0;
-		double r = 0;
+void SoundEngineChannel::process_sample(double& lsample, double& rsample, SampleInfo &info, unsigned int channel, Metronome& metronome, SoundEngine* engine) {
+	//Process
+	if (active) {
 		//Arpeggiator
 		if (arp.on) {
 			arp.apply(info,
@@ -28,22 +26,20 @@ void SoundEngineChannel::process_sample(double& lsample, double& rsample, Sample
 				engine->release_note(i, channel, note);
 			});
 		}
-		//Process
-		if (active) {
-			engine->process_channel_sample(l, r, info);
-		}
+		//Channels
+		engine->process_channel(lsample, rsample, channel, info);
 		//Vocoder
-		vocoder.apply(l, r, info.input_sample, vocoder_preset, info);
+		vocoder.apply(lsample, rsample, info.input_sample, vocoder_preset, info);
 		//Bit Crusher
-		bitcrusher.apply(l, r, bitcrusher_preset, info);
+		bitcrusher.apply(lsample, rsample, bitcrusher_preset, info);
 		//Pan
-		l *= (1 - fmax(0, panning));
-		r *= (1 - fmax(0, -panning));
+		lsample *= (1 - fmax(0, panning));
+		rsample *= (1 - fmax(0, -panning));
 		//Looper
-		looper.apply(l, r, metronome, info);
+		looper.apply(lsample, rsample, metronome, info);
 		//Playback
-		lsample += l * volume;
-		rsample += r * volume;
+		lsample += lsample * volume;
+		rsample += rsample * volume;
 	}
 }
 
@@ -247,14 +243,6 @@ ssize_t SoundEngineChannel::get_engine() {
 	return engine_index;
 }
 
-inline SoundEngine* SoundEngineChannel::get_engine(std::vector<SoundEngine*>& engines) {
-	ssize_t engine_index = this->engine_index;
-	if (engine_index >= 0 && engine_index < (ssize_t) engines.size()) {
-		return engines[engine_index];
-	}
-	return nullptr;
-}
-
 SoundEngineChannel::~SoundEngineChannel() {
 	set_engine(-1);
 }
@@ -268,16 +256,18 @@ SoundEngineDevice::SoundEngineDevice() : metronome(120){
 void SoundEngineDevice::process_sample(double& lsample, double& rsample, SampleInfo &info) {
 	//Channels
 	//Notes
-	std::array<std::array<double, SOUND_ENGINE_MIDI_CHANNELS>, SOUND_ENGINE_COUNT> lsample_buffer = {};
-	std::array<std::array<double, SOUND_ENGINE_MIDI_CHANNELS>, SOUND_ENGINE_COUNT> rsample_buffer = {};
+	std::array<double, SOUND_ENGINE_MIDI_CHANNELS> lsample_buffer = {};	//TODO one array per channel would probably be enough
+	std::array<double, SOUND_ENGINE_MIDI_CHANNELS> rsample_buffer = {};
 	for (size_t i = 0; i < SOUND_ENGINE_COUNT; ++i) {
-		sound_engines[i]->process_voices(lsample_buffer[i], rsample_buffer[i], info)
+		sound_engines[i]->process_voices(lsample_buffer, rsample_buffer, info, (ssize_t) i, channels);
 	}
 	//Channels
 	for (size_t i = 0; i < SOUND_ENGINE_MIDI_CHANNELS; ++i) {
 		SoundEngineChannel& ch = this->channels[i];
-		SoundEngine* engine = ch.get_engine(sound_engines);
-		ch.process_sample(lsample, rsample, info, metronome, engine);
+		if (ch.engine_index > 0 && ch.engine_index < SOUND_ENGINE_COUNT) {
+			SoundEngine* engine = sound_engines[i];
+			ch.process_sample(lsample, rsample, info, i, metronome, engine);
+		}
 	}
 	//Metronome
 	if (play_metronome) {
