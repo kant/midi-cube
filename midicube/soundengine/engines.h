@@ -15,11 +15,11 @@
 #include "asynth.h"
 
 extern void fill_sound_engine_device(SoundEngineDevice* device) {
-	device->add_sound_engine(new SoundFontSynth());
-	device->add_sound_engine(new B3Organ());
-	device->add_sound_engine(new AnalogSynth());
-	device->add_sound_engine(new SampleDrums());
-	device->add_sound_engine(new Sampler());
+	device->sound_engines.at(0) = new SoundFontSynth();
+	device->sound_engines.at(1) = new B3Organ();
+	device->sound_engines.at(2) = new AnalogSynth();
+	device->sound_engines.at(3) = new SampleDrums();
+	device->sound_engines.at(4) = new Sampler();
 }
 
 

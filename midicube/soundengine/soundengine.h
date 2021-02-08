@@ -24,6 +24,7 @@
 
 #define SOUND_ENGINE_POLYPHONY 30
 #define SOUND_ENGINE_MIDI_CHANNELS 16
+#define SOUND_ENGINE_COUNT 5
 
 class SoundEngineDevice;
 
@@ -272,8 +273,6 @@ enum SoundEngineProperty {
 class SoundEngineDevice : public PropertyHolder {
 
 private:
-	std::vector<SoundEngine*> sound_engines;
-
 	ADSREnvelopeData metronome_env_data{0.0005, 0.02, 0, 0};
 	ADSREnvelope metronome_env;
 
@@ -284,9 +283,7 @@ public:
 
 	SoundEngineDevice();
 
-	std::vector<SoundEngine*> get_sound_engines();
-
-	void add_sound_engine(SoundEngine* engine);
+	std::array<SoundEngine*, SOUND_ENGINE_COUNT> sound_engines;
 
 	void send(MidiMessage& message, SampleInfo& info);
 

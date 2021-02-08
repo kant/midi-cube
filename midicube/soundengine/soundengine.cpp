@@ -267,7 +267,14 @@ SoundEngineDevice::SoundEngineDevice() : metronome(120){
 
 void SoundEngineDevice::process_sample(double& lsample, double& rsample, SampleInfo &info) {
 	//Channels
-	for (size_t i = 0; i < this->channels.size(); ++i) {
+	//Notes
+	std::array<std::array<double, SOUND_ENGINE_MIDI_CHANNELS>, SOUND_ENGINE_COUNT> lsample_buffer = {};
+	std::array<std::array<double, SOUND_ENGINE_MIDI_CHANNELS>, SOUND_ENGINE_COUNT> rsample_buffer = {};
+	for (size_t i = 0; i < SOUND_ENGINE_COUNT; ++i) {
+		sound_engines[i]->process_voices(lsample_buffer[i], rsample_buffer[i], info)
+	}
+	//Channels
+	for (size_t i = 0; i < SOUND_ENGINE_MIDI_CHANNELS; ++i) {
 		SoundEngineChannel& ch = this->channels[i];
 		SoundEngine* engine = ch.get_engine(sound_engines);
 		ch.process_sample(lsample, rsample, info, metronome, engine);
@@ -284,14 +291,6 @@ void SoundEngineDevice::process_sample(double& lsample, double& rsample, SampleI
 			rsample += sample;
 		}
 	}
-}
-
-std::vector<SoundEngine*> SoundEngineDevice::get_sound_engines() {
-	return sound_engines;
-}
-
-void SoundEngineDevice::add_sound_engine(SoundEngine* engine) {
-	sound_engines.push_back(engine);
 }
 
 void SoundEngineDevice::send(MidiMessage &message, SampleInfo& info) {
