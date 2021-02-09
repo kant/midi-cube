@@ -55,9 +55,10 @@ public:
 
 };
 
-template<typename V, size_t N>
+template<typename C, typename V, size_t N>
 class BaseSoundEngine : public SoundEngine {
 private:
+	std::array<C, SOUND_ENGINE_MIDI_CHANNELS> channels;
 	KeyboardEnvironment environment;
 	VoiceManager<V, N> voice_mgr;
 
@@ -81,9 +82,9 @@ public:
 	virtual void process_voices(std::array<double, SOUND_ENGINE_MIDI_CHANNELS>& lsample, std::array<double, SOUND_ENGINE_MIDI_CHANNELS>& rsample, SampleInfo& info,  ssize_t index, std::array<SoundEngineChannel, SOUND_ENGINE_MIDI_CHANNELS>& channels);
 
 	//Virtual methods
-	virtual void process_voice_sample(double& lsample, double& rsample, SampleInfo& info, V& voice, KeyboardEnvironment& env, size_t note_index) = 0;
+	virtual void process_voice_sample(double& lsample, double& rsample, SampleInfo& info, V& voice, C& data, KeyboardEnvironment& env, size_t note_index) = 0;
 
-	virtual void process_sample(double& lsample, double& rsample, SampleInfo& info, KeyboardEnvironment& env, VoiceStatus<V>& status) {
+	virtual void process_sample(double& lsample, double& rsample, SampleInfo& info, C& data, KeyboardEnvironment& env, VoiceStatus<V>& status) {
 
 	};
 
@@ -101,8 +102,8 @@ public:
 
 };
 
-template<typename V, size_t N>
-void BaseSoundEngine<V, N>::midi_message(MidiMessage& message, SampleInfo& info) {
+template<typename C, typename V, size_t N>
+void BaseSoundEngine<C, V, N>::midi_message(MidiMessage& message, SampleInfo& info) {
 	double pitch;
 	switch (message.type) {
 		case MessageType::NOTE_ON:
@@ -136,18 +137,18 @@ void BaseSoundEngine<V, N>::midi_message(MidiMessage& message, SampleInfo& info)
 	}
 }
 
-template<typename V, size_t N>
-void BaseSoundEngine<V, N>::press_note(SampleInfo& info, unsigned int channel, unsigned int note, double velocity) {
+template<typename C, typename V, size_t N>
+void BaseSoundEngine<C, V, N>::press_note(SampleInfo& info, unsigned int channel, unsigned int note, double velocity) {
 	this->voice_mgr.press_note(info, channel, note, velocity);
 }
 
-template<typename V, size_t N>
-void BaseSoundEngine<V, N>::release_note(SampleInfo& info, unsigned int channel, unsigned int note) {
+template<typename C, typename V, size_t N>
+void BaseSoundEngine<C, V, N>::release_note(SampleInfo& info, unsigned int channel, unsigned int note) {
 	this->voice_mgr.release_note(info, channel, note);
 }
 
-template<typename V, size_t N>
-void BaseSoundEngine<V, N>::process_voices(std::array<double, SOUND_ENGINE_MIDI_CHANNELS>& lsample, std::array<double, SOUND_ENGINE_MIDI_CHANNELS>& rsample, SampleInfo& info,  ssize_t index, std::array<SoundEngineChannel, SOUND_ENGINE_MIDI_CHANNELS>& channels) {
+template<typename C, typename V, size_t N>
+void BaseSoundEngine<C, V, N>::process_voices(std::array<double, SOUND_ENGINE_MIDI_CHANNELS>& lsample, std::array<double, SOUND_ENGINE_MIDI_CHANNELS>& rsample, SampleInfo& info,  ssize_t index, std::array<SoundEngineChannel, SOUND_ENGINE_MIDI_CHANNELS>& channels) {
 	//Notes
 	for (size_t i = 0; i < N; ++i) {
 		TriggeredNote& n = voice_mgr.note[i].note;
@@ -157,15 +158,15 @@ void BaseSoundEngine<V, N>::process_voices(std::array<double, SOUND_ENGINE_MIDI_
 			}
 			else {
 				n.phase_shift += (environment.pitch_bend - 1) * info.time_step;
-				process_voice_sample(lsample[n.channel], rsample[n.channel], info, voice_mgr.note[i], environment, i);
+				process_voice_sample(lsample[n.channel], rsample[n.channel], info, voice_mgr.note[i], channels[n.channel], environment, i);
 			}
 		}
 	}
 }
 
-template<typename V, size_t N>
-void BaseSoundEngine<V, N>::process_channel(double& lsample, double& rsample, unsigned int channel, SampleInfo& info) {
-	process_sample(lsample, rsample, info, environment, voice_mgr.status[channel]);
+template<typename C, typename V, size_t N>
+void BaseSoundEngine<C, V, N>::process_channel(double& lsample, double& rsample, unsigned int channel, SampleInfo& info) {
+	process_sample(lsample, rsample, info, channels[channel], environment, voice_mgr.status[channel]);
 }
 
 template <typename T>

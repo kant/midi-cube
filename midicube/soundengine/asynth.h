@@ -191,7 +191,11 @@ protected:
 	}
 };
 
-class AnalogSynth : public BaseSoundEngine<SimpleVoice, ANALOG_SYNTH_POLYPHONY>, public PropertyHolder {
+struct AnalogSynthData {
+
+};
+
+class AnalogSynth : public BaseSoundEngine<AnalogSynthData, SimpleVoice, ANALOG_SYNTH_POLYPHONY>, public PropertyHolder {
 
 private:
 	AnalogOscilatorBank<SOUND_ENGINE_POLYPHONY * ANALOG_SYNTH_PART_COUNT, 8> oscilators;
@@ -221,9 +225,9 @@ public:
 
 	AnalogSynth();
 
-	void process_voice_sample(double& lsample, double& rsample, SampleInfo& info, SimpleVoice& voice, KeyboardEnvironment& env, size_t note_index);
+	void process_voice_sample(double& lsample, double& rsample, SampleInfo& info, SimpleVoice& voice, AnalogSynthData& channel, KeyboardEnvironment& env, size_t note_index);
 
-	void process_sample(double& lsample, double& rsample, SampleInfo& info, KeyboardEnvironment& env, VoiceStatus<SimpleVoice>& status);
+	void process_sample(double& lsample, double& rsample, SampleInfo& info, AnalogSynthData& channel, KeyboardEnvironment& env, VoiceStatus<SimpleVoice>& status);
 
 	void control_change(unsigned int control, unsigned int value);
 
