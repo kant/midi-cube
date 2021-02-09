@@ -77,7 +77,7 @@ void B3Organ::trigger_tonewheel(int tonewheel, double volume, SampleInfo& info, 
 	}
 }
 
-void B3Organ::process_note_sample(double& lsample, double& rsample, SampleInfo &info, SimpleVoice& voice, KeyboardEnvironment& env, size_t note_index) {
+void B3Organ::process_voice_sample(double& lsample, double& rsample, SampleInfo &info, SimpleVoice& voice, KeyboardEnvironment& env, size_t note_index) {
 	TriggeredNote& note= voice.note;;
 	//Organ sound
 	double drawbar_amount = data.preset.drawbars.size() + (data.preset.percussion_soft ? data.preset.percussion_soft_volume : data.preset.percussion_hard_volume);

@@ -27,7 +27,7 @@ public:
 
 	SampleDrums();
 
-	void process_note_sample(double& lsample, double& rsample, SampleInfo& info, SimpleVoice& note, KeyboardEnvironment& env, size_t note_index);
+	void process_voice_sample(double& lsample, double& rsample, SampleInfo& info, SimpleVoice& note, KeyboardEnvironment& env, size_t note_index);
 
 	bool voice_finished(SampleInfo& info, SimpleVoice& note, KeyboardEnvironment& env, size_t note_index);
 

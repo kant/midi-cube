@@ -18,7 +18,7 @@ SampleDrums::SampleDrums () {
 	drumkit = load_drumkit("./data/drumkits/drums1");
 }
 
-void SampleDrums::process_note_sample(double& lsample, double& rsample, SampleInfo& info, SimpleVoice& voice, KeyboardEnvironment& env, size_t note_index) {
+void SampleDrums::process_voice_sample(double& lsample, double& rsample, SampleInfo& info, SimpleVoice& voice, KeyboardEnvironment& env, size_t note_index) {
 	try {
 		TriggeredNote& note = voice.note;
 		if (drumkit->notes.find(note.note) != drumkit->notes.end()) {

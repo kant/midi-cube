@@ -485,7 +485,7 @@ void AnalogSynth::process_note(double& lsample, double& rsample,
 	}
 }
 
-void AnalogSynth::process_note_sample(
+void AnalogSynth::process_voice_sample(
 		double& lsample, double& rsample, SampleInfo &info,
 		SimpleVoice& voice, KeyboardEnvironment &env, size_t note_index) {
 	if (!preset.mono) {
