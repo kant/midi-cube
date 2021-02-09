@@ -108,7 +108,7 @@ bool B3Organ::note_finished(SampleInfo& info, TriggeredNote& note, KeyboardEnvir
 	return !note.pressed && info.time > ORGAN_MAX_UP_DELAY;
 };
 
-void B3Organ::process_sample(double& lsample, double& rsample, SampleInfo &info, KeyboardEnvironment& env, EngineStatus<SimpleVoice>& status) {
+void B3Organ::process_sample(double& lsample, double& rsample, SampleInfo &info, KeyboardEnvironment& env, VoiceStatus<SimpleVoice>& status) {
 	//Update properties
 	double swell = this->data.swell * SWELL_RANGE + MIN_SWELL;
 

@@ -13,8 +13,17 @@
 #include "../metronome.h"
 #include <functional>
 
+#define SOUND_ENGINE_MIDI_CHANNELS 16
+
 struct SimpleVoice {
 	TriggeredNote note;
+};
+
+template<typename V>
+struct VoiceStatus {
+	size_t pressed_notes = 0;
+	size_t latest_note_index = 0;
+	V* latest_note = nullptr;
 };
 
 template<typename V, size_t N>
@@ -23,6 +32,7 @@ private:
 	inline size_t next_freq_slot(SampleInfo& info);
 
 public:
+	std::array<VoiceStatus<V>, SOUND_ENGINE_MIDI_CHANNELS> status;
 	std::array<V, N> note;
 
 	VoiceManager();
@@ -55,6 +65,7 @@ size_t VoiceManager<V, N>::next_freq_slot(SampleInfo& info) {
 template<typename V, size_t N>
 void VoiceManager<V, N>::press_note(SampleInfo& info, unsigned int channel, unsigned int note, double velocity) {
 	size_t slot = next_freq_slot(info);
+	bool used = this->note[slot].note.valid;
 	TriggeredNote& n = this->note[slot].note;
 	n.channel = channel;
 	n.freq = note_to_freq(note);
@@ -65,10 +76,19 @@ void VoiceManager<V, N>::press_note(SampleInfo& info, unsigned int channel, unsi
 	n.release_time = 0;
 	n.phase_shift = 0;
 	n.valid = true;
+
+	//Status
+	status[channel].pressed_notes += 1 - used;
+	status[channel].latest_note_index = slot;
+	status[channel].latest_note = &this->note[slot];
 }
 
 template<typename V, size_t N>
 void VoiceManager<V, N>::release_note(SampleInfo& info, unsigned int channel, unsigned int note, bool invalidate) {
+	//Recount
+	status[channel].pressed_notes = 0;
+	status[channel].latest_note_index = 0;
+	status[channel].latest_note = nullptr;
 	for (size_t i = 0; i < N; ++i) {
 		TriggeredNote& n = this->note[i].note;
 		if (n.channel == channel && n.note == note && n.pressed) {
@@ -76,6 +96,14 @@ void VoiceManager<V, N>::release_note(SampleInfo& info, unsigned int channel, un
 			n.release_time = info.time;
 			if (invalidate) {
 				n.valid = false;
+			}
+		}
+		//Count
+		if (n.valid) {
+			++status[channel].pressed_notes;
+			if (!status[channel].latest_note || status[channel].latest_note->note.start_time < n.start_time) {
+				status[channel].latest_note = &this->note[i];
+				status[channel].latest_note_index = i;
 			}
 		}
 	}

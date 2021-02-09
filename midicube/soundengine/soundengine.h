@@ -23,17 +23,9 @@
 #include <functional>
 
 #define SOUND_ENGINE_POLYPHONY 30
-#define SOUND_ENGINE_MIDI_CHANNELS 16
 #define SOUND_ENGINE_COUNT 5
 
 class SoundEngineDevice;
-
-template<typename V>
-struct EngineStatus {
-	size_t pressed_notes;
-	size_t latest_note_index;
-	V* latest_note;
-};
 
 class SoundEngineChannel;
 
@@ -91,7 +83,7 @@ public:
 	//Virtual methods
 	virtual void process_voice_sample(double& lsample, double& rsample, SampleInfo& info, V& voice, KeyboardEnvironment& env, size_t note_index) = 0;
 
-	virtual void process_sample(double& lsample, double& rsample, SampleInfo& info, KeyboardEnvironment& env, EngineStatus<V>& status) {
+	virtual void process_sample(double& lsample, double& rsample, SampleInfo& info, KeyboardEnvironment& env, VoiceStatus<V>& status) {
 
 	};
 
@@ -156,7 +148,6 @@ void BaseSoundEngine<V, N>::release_note(SampleInfo& info, unsigned int channel,
 
 template<typename V, size_t N>
 void BaseSoundEngine<V, N>::process_voices(std::array<double, SOUND_ENGINE_MIDI_CHANNELS>& lsample, std::array<double, SOUND_ENGINE_MIDI_CHANNELS>& rsample, SampleInfo& info,  ssize_t index, std::array<SoundEngineChannel, SOUND_ENGINE_MIDI_CHANNELS>& channels) {
-	EngineStatus<V> status = {0, 0, nullptr};
 	//Notes
 	for (size_t i = 0; i < N; ++i) {
 		TriggeredNote& n = voice_mgr.note[i].note;
@@ -165,13 +156,8 @@ void BaseSoundEngine<V, N>::process_voices(std::array<double, SOUND_ENGINE_MIDI_
 				n.valid = false;
 			}
 			else {
-				++status.pressed_notes; //TODO might cause problems in the future
 				n.phase_shift += (environment.pitch_bend - 1) * info.time_step;
 				process_voice_sample(lsample[n.channel], rsample[n.channel], info, voice_mgr.note[i], environment, i);
-				if (!status.latest_note || status.latest_note->note.start_time < n.start_time) {
-					status.latest_note = &voice_mgr.note[i];
-					status.latest_note_index = i;
-				}
 			}
 		}
 	}

@@ -494,7 +494,7 @@ void AnalogSynth::process_note_sample(
 }
 
 void AnalogSynth::process_sample(double& lsample, double& rsample,
-		SampleInfo &info, KeyboardEnvironment &env, EngineStatus<SimpleVoice> &status) {
+		SampleInfo &info, KeyboardEnvironment &env, VoiceStatus<SimpleVoice> &status) {
 	//Mono
 	if (preset.mono && status.latest_note) {
 		unsigned int note = status.latest_note->note.note;

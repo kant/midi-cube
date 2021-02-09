@@ -223,7 +223,7 @@ public:
 
 	void process_note_sample(double& lsample, double& rsample, SampleInfo& info, SimpleVoice& voice, KeyboardEnvironment& env, size_t note_index);
 
-	void process_sample(double& lsample, double& rsample, SampleInfo& info, KeyboardEnvironment& env, EngineStatus<SimpleVoice>& status);
+	void process_sample(double& lsample, double& rsample, SampleInfo& info, KeyboardEnvironment& env, VoiceStatus<SimpleVoice>& status);
 
 	void control_change(unsigned int control, unsigned int value);
 
