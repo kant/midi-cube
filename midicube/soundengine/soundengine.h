@@ -76,9 +76,9 @@ public:
 
 	};
 
-	void process_channel(double& lsample, double& rsample, unsigned int channel, SampleInfo& info);
+	virtual void process_channel(double& lsample, double& rsample, unsigned int channel, SampleInfo& info);
 
-	void process_voices(std::array<double, SOUND_ENGINE_MIDI_CHANNELS>& lsample, std::array<double, SOUND_ENGINE_MIDI_CHANNELS>& rsample, SampleInfo& info,  ssize_t index, std::array<SoundEngineChannel, SOUND_ENGINE_MIDI_CHANNELS>& channels);
+	virtual void process_voices(std::array<double, SOUND_ENGINE_MIDI_CHANNELS>& lsample, std::array<double, SOUND_ENGINE_MIDI_CHANNELS>& rsample, SampleInfo& info,  ssize_t index, std::array<SoundEngineChannel, SOUND_ENGINE_MIDI_CHANNELS>& channels);
 
 	//Virtual methods
 	virtual void process_voice_sample(double& lsample, double& rsample, SampleInfo& info, V& voice, KeyboardEnvironment& env, size_t note_index) = 0;
@@ -165,7 +165,7 @@ void BaseSoundEngine<V, N>::process_voices(std::array<double, SOUND_ENGINE_MIDI_
 
 template<typename V, size_t N>
 void BaseSoundEngine<V, N>::process_channel(double& lsample, double& rsample, unsigned int channel, SampleInfo& info) {
-
+	process_sample(lsample, rsample, info, environment, voice_mgr.status[channel]);
 }
 
 template <typename T>
