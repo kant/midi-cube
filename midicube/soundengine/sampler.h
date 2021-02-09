@@ -73,7 +73,11 @@ public:
 	~SampleSoundStore();
 };
 
-class Sampler : public BaseSoundEngine<SimpleVoice, SAMPLER_POLYPHONY> {
+struct SamplerData {
+
+};
+
+class Sampler : public BaseSoundEngine<SamplerData, SimpleVoice, SAMPLER_POLYPHONY> {
 
 private:
 	SampleSound* sample;
@@ -83,7 +87,7 @@ public:
 
 	Sampler();
 
-	void process_voice_sample(double& lsample, double& rsample, SampleInfo& info, SimpleVoice& note, KeyboardEnvironment& env, size_t note_index);
+	void process_voice_sample(double& lsample, double& rsample, SampleInfo& info, SimpleVoice& note, SamplerData& channel, KeyboardEnvironment& env, size_t note_index);
 
 	bool voice_finished(SampleInfo& info, SimpleVoice& note, KeyboardEnvironment& env, size_t note_index);
 

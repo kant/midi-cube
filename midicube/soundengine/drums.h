@@ -18,7 +18,11 @@ struct SampleDrumKit {
 	std::unordered_map<unsigned int, AudioSample> notes;
 };
 
-class SampleDrums : public BaseSoundEngine<SimpleVoice, SAMPLE_DRUMS_POLYPHONY> {
+struct SampleDrumsData {
+
+};
+
+class SampleDrums : public BaseSoundEngine<SampleDrumsData, SimpleVoice, SAMPLE_DRUMS_POLYPHONY> {
 
 private:
 	SampleDrumKit* drumkit;
@@ -27,7 +31,7 @@ public:
 
 	SampleDrums();
 
-	void process_voice_sample(double& lsample, double& rsample, SampleInfo& info, SimpleVoice& note, KeyboardEnvironment& env, size_t note_index);
+	void process_voice_sample(double& lsample, double& rsample, SampleInfo& info, SimpleVoice& note, SampleDrumsData& channel, KeyboardEnvironment& env, size_t note_index);
 
 	bool voice_finished(SampleInfo& info, SimpleVoice& note, KeyboardEnvironment& env, size_t note_index);
 

@@ -487,14 +487,14 @@ void AnalogSynth::process_note(double& lsample, double& rsample,
 
 void AnalogSynth::process_voice_sample(
 		double& lsample, double& rsample, SampleInfo &info,
-		SimpleVoice& voice, KeyboardEnvironment &env, size_t note_index) {
+		SimpleVoice& voice, AnalogSynthData& channel, KeyboardEnvironment &env, size_t note_index) {
 	if (!preset.mono) {
 		process_note(lsample, rsample, info, voice, env, note_index);
 	}
 }
 
 void AnalogSynth::process_sample(double& lsample, double& rsample,
-		SampleInfo &info, KeyboardEnvironment &env, VoiceStatus<SimpleVoice> &status) {
+		SampleInfo &info, AnalogSynthData& channel, KeyboardEnvironment &env, VoiceStatus<SimpleVoice> &status) {
 	//Mono
 	if (preset.mono && status.latest_note) {
 		unsigned int note = status.latest_note->note.note;

@@ -77,7 +77,7 @@ void B3Organ::trigger_tonewheel(int tonewheel, double volume, SampleInfo& info, 
 	}
 }
 
-void B3Organ::process_voice_sample(double& lsample, double& rsample, SampleInfo &info, SimpleVoice& voice, KeyboardEnvironment& env, size_t note_index) {
+void B3Organ::process_voice_sample(double& lsample, double& rsample, SampleInfo &info, SimpleVoice& voice, B3OrganData& data, KeyboardEnvironment& env, size_t note_index) {
 	TriggeredNote& note= voice.note;;
 	//Organ sound
 	double drawbar_amount = data.preset.drawbars.size() + (data.preset.percussion_soft ? data.preset.percussion_soft_volume : data.preset.percussion_hard_volume);
@@ -104,11 +104,11 @@ static double calc_vol (size_t keys, double comp_factor) {
 	return vol;
 }
 
-bool B3Organ::note_finished(SampleInfo& info, TriggeredNote& note, KeyboardEnvironment& env, size_t note_index) {
-	return !note.pressed && info.time > ORGAN_MAX_UP_DELAY;
+bool B3Organ::voice_finished(SampleInfo& info, SimpleVoice& note, KeyboardEnvironment& env, size_t note_index) {
+	return !note.note.pressed && info.time > ORGAN_MAX_UP_DELAY;
 };
 
-void B3Organ::process_sample(double& lsample, double& rsample, SampleInfo &info, KeyboardEnvironment& env, VoiceStatus<SimpleVoice>& status) {
+void B3Organ::process_sample(double& lsample, double& rsample, SampleInfo &info, B3OrganData& data, KeyboardEnvironment& env, VoiceStatus<SimpleVoice>& status) {
 	//Update properties
 	double swell = this->data.swell * SWELL_RANGE + MIN_SWELL;
 

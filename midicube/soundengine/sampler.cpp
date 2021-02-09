@@ -98,7 +98,7 @@ Sampler::Sampler() {
 	sample = load_sound("./data/samples/piano");
 }
 
-void Sampler::process_voice_sample(double& lsample, double& rsample, SampleInfo& info, SimpleVoice& voice, KeyboardEnvironment& env, size_t note_index) {
+void Sampler::process_voice_sample(double& lsample, double& rsample, SampleInfo& info, SimpleVoice& voice, SamplerData& channel, KeyboardEnvironment& env, size_t note_index) {
 	ADSREnvelopeData e = this->sample->get_envelope();
 	ADSREnvelope& en = envs[note_index];
 	if (en.is_finished()) {

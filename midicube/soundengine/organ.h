@@ -162,8 +162,7 @@ public:
 	double process(SampleInfo& info, double freq);
 };
 
-class B3OrganData {
-public:
+struct B3OrganData {
 	B3OrganPreset preset;
 	AmplifierSimulationEffect amplifier;
 	RotarySpeakerEffect rotary_speaker;
@@ -179,7 +178,7 @@ public:
 
 };
 
-class B3Organ : public BaseSoundEngine<SimpleVoice, ORGAN_POLYPHONY>, public PropertyHolder {
+class B3Organ : public BaseSoundEngine<B3OrganData, SimpleVoice, ORGAN_POLYPHONY>, public PropertyHolder {
 
 private:
 	//Static values
@@ -195,13 +194,13 @@ public:
 
 	B3Organ();
 
-	void process_voice_sample(double& lsample, double& rsample, SampleInfo& info, SimpleVoice& note, KeyboardEnvironment& env, size_t note_index);
+	void process_voice_sample(double& lsample, double& rsample, SampleInfo& info, SimpleVoice& note, B3OrganData& data, KeyboardEnvironment& env, size_t note_index);
 
-	void process_sample(double& lsample, double& rsample, SampleInfo& info, KeyboardEnvironment& env, VoiceStatus<SimpleVoice>& status);
+	void process_sample(double& lsample, double& rsample, SampleInfo& info, B3OrganData& data, KeyboardEnvironment& env, VoiceStatus<SimpleVoice>& status);
 
 	void control_change(unsigned int control, unsigned int value);
 
-	bool note_finished(SampleInfo& info, TriggeredNote& note, KeyboardEnvironment& env, size_t note_index);
+	bool voice_finished(SampleInfo& info, SimpleVoice& note, KeyboardEnvironment& env, size_t note_index);
 
 	void update_properties();
 

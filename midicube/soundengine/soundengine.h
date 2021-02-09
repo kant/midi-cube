@@ -158,7 +158,7 @@ void BaseSoundEngine<C, V, N>::process_voices(std::array<double, SOUND_ENGINE_MI
 			}
 			else {
 				n.phase_shift += (environment.pitch_bend - 1) * info.time_step;
-				process_voice_sample(lsample[n.channel], rsample[n.channel], info, voice_mgr.note[i], channels[n.channel], environment, i);
+				process_voice_sample(lsample[n.channel], rsample[n.channel], info, voice_mgr.note[i], this->channels[n.channel], environment, i);
 			}
 		}
 	}
