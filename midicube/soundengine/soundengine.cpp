@@ -38,8 +38,8 @@ void SoundEngineChannel::process_sample(double& lsample, double& rsample, Sample
 		//Looper
 		looper.apply(lsample, rsample, metronome, info);
 		//Playback
-		lsample += lsample * volume;
-		rsample += rsample * volume;
+		lsample *= volume;
+		rsample *= volume;
 	}
 }
 
@@ -264,8 +264,8 @@ void SoundEngineDevice::process_sample(double& lsample, double& rsample, SampleI
 	//Channels
 	for (size_t i = 0; i < SOUND_ENGINE_MIDI_CHANNELS; ++i) {
 		SoundEngineChannel& ch = this->channels[i];
-		if (ch.engine_index > 0 && ch.engine_index < SOUND_ENGINE_COUNT) {
-			SoundEngine* engine = sound_engines[i];
+		if (ch.engine_index >= 0 && ch.engine_index < SOUND_ENGINE_COUNT) {
+			SoundEngine* engine = sound_engines[ch.engine_index];
 			ch.process_sample(lsample_buffer[ch.engine_index][i], rsample_buffer[ch.engine_index][i], info, i, metronome, engine);
 		}
 	}
@@ -297,7 +297,7 @@ void SoundEngineDevice::process_sample(double& lsample, double& rsample, SampleI
 
 void SoundEngineDevice::send(MidiMessage &message, SampleInfo& info) {
 	SoundEngineChannel& ch = this->channels[message.channel];
-	if (ch.active && ch.engine_index > 0 && ch.engine_index < SOUND_ENGINE_COUNT) {
+	if (ch.active && ch.engine_index >= 0 && ch.engine_index < SOUND_ENGINE_COUNT) {
 		ch.send(message, info, *sound_engines[ch.engine_index]);
 	}
 }

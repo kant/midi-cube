@@ -17,7 +17,6 @@ SoundFontSynth::SoundFontSynth() {
 	for (const auto& f : boost::filesystem::directory_iterator("./data/soundfonts")) {
 		fluid_synth_sfload(synth, f.path().c_str(), 1);
 	}
-	fluid_synth_cc(synth, 0, 7, 127); //Set volume
 	//TODO use only one synth instance
 }
 
