@@ -32,31 +32,31 @@ Scene AnalogSynthFMView::create(Frame &frame) {
 	int tmp_y = 10;
 
 	//Title
-	Label* carrier = new Label("Carrier", main_font, 18, tmp_x + 85 * ANALOG_PART_COUNT/2 - 50, tmp_y);
+	Label* carrier = new Label("Carrier", main_font, 18, tmp_x + 85 * ANALOG_SYNTH_PART_COUNT/2 - 50, tmp_y);
 	controls.push_back(carrier);
 	tmp_y += 25;
 
-	for (int i = 0; i < ANALOG_PART_COUNT; ++i) {
+	for (int i = 0; i < ANALOG_SYNTH_PART_COUNT; ++i) {
 		Label* osc = new Label("Osc " + std::to_string(i + 1), main_font, 12, tmp_x + i * 85 + 135, tmp_y);
 		controls.push_back(osc);
 	}
 	tmp_y += 15;
 
 	//Modulator
-	Label* modulator = new Label("Modulator", main_font, 18, tmp_x, tmp_y + 45 * ANALOG_PART_COUNT/2 - 10);
+	Label* modulator = new Label("Modulator", main_font, 18, tmp_x, tmp_y + 45 * ANALOG_SYNTH_PART_COUNT/2 - 10);
 	controls.push_back(modulator);
 
 	tmp_x += 100;
 
 	//Grid
-	for (size_t i = 0; i < ANALOG_PART_COUNT; ++i) {
+	for (size_t i = 0; i < ANALOG_SYNTH_PART_COUNT; ++i) {
 		SynthPartPropertyHolder& part = synth.parts[i];
 		holders.push_back(&part);
 
 		int y = tmp_y + i * 45;
 		Label* osc = new Label("Osc " + std::to_string(i + 1), main_font, 12, tmp_x, y + 10);
 		controls.push_back(osc);
-		for (size_t j = 0; j < ANALOG_PART_COUNT; ++j) {
+		for (size_t j = 0; j < ANALOG_SYNTH_PART_COUNT; ++j) {
 			int x = tmp_x + j * 85 + 35;
 			DragBox<double>* value = new DragBox<double>(0, 0, 1, main_font, 16, x, y, 80, 40);
 			value->bind(&part, SynthPartProperty::pSynthOscFM, j);
@@ -67,12 +67,12 @@ Scene AnalogSynthFMView::create(Frame &frame) {
 			controls.push_back(value);
 		}
 		//Audible
-		CheckBox* audible = new CheckBox(false, "", main_font, 16, tmp_x + ANALOG_PART_COUNT * 85 + 35, y, 40, 40);
+		CheckBox* audible = new CheckBox(false, "", main_font, 16, tmp_x + ANALOG_SYNTH_PART_COUNT * 85 + 35, y, 40, 40);
 		audible->bind(&part, SynthPartProperty::pSynthOscAudible);
 		controls.push_back(audible);
 
 		//Edit
-		Button* edit = new Button("Edit", main_font, 16, tmp_x + ANALOG_PART_COUNT * 85 + 35 + 45, y, 80, 40);
+		Button* edit = new Button("Edit", main_font, 16, tmp_x + ANALOG_SYNTH_PART_COUNT * 85 + 35 + 45, y, 80, 40);
 		edit->rect.setFillColor(sf::Color(0, 180, 255));
 		edit->set_on_click([&frame, this, i]{
 			frame.change_view(new AnalogSynthOscilatorView(synth, channel, channel_index, i));

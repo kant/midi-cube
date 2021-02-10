@@ -447,7 +447,7 @@ void AnalogSynth::process_note(double& lsample, double& rsample,
 		double signal = sig.carrier;
 		//Frequency modulate others
 		double modulator = sig.modulator * volume;
-		for (size_t j = 0; j < ANALOG_PART_COUNT; ++j) {
+		for (size_t j = 0; j < ANALOG_SYNTH_PART_COUNT; ++j) {
 			modulators[OSC_INDEX(note_index, j)] += modulator * osc.fm[j];
 		}
 
@@ -991,7 +991,7 @@ void SynthPartPropertyHolder::update_properties() {
 			osc.transpose);
 	submit_change(SynthPartProperty::pSynthOscPitch, osc.pitch);
 
-	for (size_t i = 0; i < ANALOG_PART_COUNT; ++i) {
+	for (size_t i = 0; i < ANALOG_SYNTH_PART_COUNT; ++i) {
 		PropertyHolder::submit_change(SynthPartProperty::pSynthOscFM, osc.fm[i], i);
 	}
 
